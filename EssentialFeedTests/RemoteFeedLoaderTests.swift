@@ -86,29 +86,21 @@ final class RemoteFeedLoaderTests: XCTestCase {
     
     func test_load_deliversItemsOn200HTTPResponseWithJSONItems() throws {
         let (sut, client) = makeSUT()
-        let item1 = FeedItem(
-            id: UUID(),
-            imageURL: URL(string: "http://a-url.com")!
-        )
+        let item1 = FeedItem.fixture()
        
-        let item2 = FeedItem(
-            id: UUID(),
+        let item2 = FeedItem.fixture(
             description: "a description",
-            location: "a location",
-            imageURL: URL(string: "http://a-url.com")!
+            location: "a location"
         )
         
-        let feedItemListData = try JSONEncoder().encode(
-            FeedItemList(
-                items: [item1, item2]
-            )
-        )
-       
+       let items = [item1, item2]
+       let data = try FeedItemList.makeData(with: items)
+        
         expect(
             sut,
             toCompleteWithResult: .success([item1, item2])
         ) {
-            client.complete(withStatusCode: 200, data: feedItemListData)
+            client.complete(withStatusCode: 200, data: data)
         }
     }
     
@@ -164,5 +156,31 @@ final class RemoteFeedLoaderTests: XCTestCase {
             )!
             messages[index].completion(.success((data, response)))
         }
+    }
+}
+
+private extension FeedItem {
+    static func fixture(
+        id: UUID = UUID(),
+        description: String? = nil,
+        location: String? = nil,
+        imageURL: URL = URL(string: "http://a-url.com")!
+    ) -> FeedItem {
+        FeedItem(
+            id: id,
+            description: description,
+            location: location,
+            imageURL: imageURL
+        )
+    }
+}
+
+private extension FeedItemList {
+    static func makeData(with items: [FeedItem]) throws -> Data {
+        try JSONEncoder().encode(
+            FeedItemList(
+                items: items
+            )
+        )
     }
 }

@@ -13,13 +13,6 @@ public struct FeedItem: Equatable, Codable {
     public let location: String?
     public let imageURL: URL
     
-    enum CodingKeys: String, CodingKey {
-        case id
-        case description
-        case location
-        case imageURL = "image"
-    }
-    
     public init(
         id: UUID,
         description: String? = nil,
@@ -35,7 +28,16 @@ public struct FeedItem: Equatable, Codable {
     
 }
 
-public struct FeedItemList: Decodable {
+extension FeedItem {
+    enum CodingKeys: String, CodingKey {
+        case id
+        case description
+        case location
+        case imageURL = "image"
+    }
+}
+
+public struct FeedItemList: Codable {
     let items: [FeedItem]
     public init(items: [FeedItem]) {
         self.items = items
