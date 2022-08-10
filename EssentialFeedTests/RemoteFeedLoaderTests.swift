@@ -46,11 +46,11 @@ final class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
-    func test_load_deliversErrorOnNon200HTTPResponse() throws {
+    func test_load_deliversErrorOnNon200HTTPResponse() {
         let (sut, client) = makeSUT()
         
         let samples = [199, 201, 300, 400, 500]
-        let json = try FeedItemList.makeData(with: [])
+        let json = makeData(with: [])
         samples.enumerated().forEach { (index, statusCode) in
             expect(
                 sut,
@@ -85,7 +85,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
-    func test_load_deliversItemsOn200HTTPResponseWithJSONItems() throws {
+    func test_load_deliversItemsOn200HTTPResponseWithJSONItems() {
         let (sut, client) = makeSUT()
         let item1 = FeedItem.fixture()
        
@@ -95,11 +95,11 @@ final class RemoteFeedLoaderTests: XCTestCase {
         )
         
        let items = [item1, item2]
-       let data = try FeedItemList.makeData(with: items)
+        let data = makeData(with: items.map{ $0.json })
         
         expect(
             sut,
-            toCompleteWithResult: .success([item1, item2])
+            toCompleteWithResult: .success([item1, item2].map{ $0.model })
         ) {
             client.complete(withStatusCode: 200, data: data)
         }
@@ -134,6 +134,11 @@ final class RemoteFeedLoaderTests: XCTestCase {
         (RemoteFeedLoader(url: url, client: client), client)
     }
     
+    private func makeData(with items: [[String: Any]]) -> Data {
+        let json = ["items": items]
+        return try! JSONSerialization.data(withJSONObject: json)
+    }
+    
     private final class HTTPClientSpy: HTTPClient {
         private var messages = [(url: URL, completion: (HTTPClientResult) -> Void)]()
         var requestURLs: [URL] {
@@ -166,22 +171,21 @@ private extension FeedItem {
         description: String? = nil,
         location: String? = nil,
         imageURL: URL = URL(string: "http://a-url.com")!
-    ) -> FeedItem {
-        FeedItem(
+    ) -> (model: FeedItem, json: [String: Any]) {
+        let item = FeedItem(
             id: id,
             description: description,
             location: location,
             imageURL: imageURL
         )
-    }
-}
-
-private extension FeedItemList {
-    static func makeData(with items: [FeedItem]) throws -> Data {
-        try JSONEncoder().encode(
-            FeedItemList(
-                items: items
-            )
-        )
+        
+        let json = [
+            "id": id.uuidString,
+            "description": description,
+            "location": location,
+            "image": imageURL.absoluteString
+        ].compactMapValues { $0 }
+        
+        return (model: item, json: json)
     }
 }
