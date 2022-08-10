@@ -32,7 +32,7 @@ public final class RemoteFeedLoader {
     public func load(completion: @escaping (Result) -> Void) {
         client.get(from: url) { result in
             switch result {
-            case .success(let data, _):
+            case .success((let data, _)):
                 if let feedItemList = try? JSONDecoder().decode(FeedItemList.self, from: data) {
                     completion(.success(feedItemList.items))
                 } else {
