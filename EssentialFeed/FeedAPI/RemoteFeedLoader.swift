@@ -11,7 +11,7 @@ public final class RemoteFeedLoader {
     private let url: URL
     private let client: HTTPClient
     public typealias Result = Swift.Result<[FeedItem], RemoteFeedLoader.Error>
-
+    
     public enum Error: Swift.Error {
         case connectivity
         case invalidData
@@ -36,35 +36,5 @@ public final class RemoteFeedLoader {
                 completion(.failure(.connectivity))
             }
         }
-    }
-}
-
-private struct FeedItemsMapper {
-    private struct Root: Codable {
-        let items: [Item]
-    }
-    
-    private struct Item: Equatable, Codable {
-        let id: UUID
-        let description: String?
-        let location: String?
-        let image: URL
-        
-        var item: FeedItem {
-            FeedItem(
-                id: id,
-                description: description,
-                location: location,
-                imageURL: image
-            )
-        }
-    }
-    static var OK_200: Int { 200 }
-    
-    static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedItem] {
-        guard response.statusCode == OK_200 else {
-            throw RemoteFeedLoader.Error.invalidData
-        }
-        return try JSONDecoder().decode(Root.self, from: data).items.map{ $0.item }
     }
 }
