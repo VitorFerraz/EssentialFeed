@@ -39,7 +39,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
 
         expect(
             sut,
-            toCompleteWithResult: .failure(.connectivity)
+            toCompleteWithResult: .failure(RemoteFeedLoader.Error.connectivity)
         ) {
             let clientError = NSError(domain: "test", code: -1)
             client.complete(with: clientError)
@@ -54,7 +54,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         samples.enumerated().forEach { (index, statusCode) in
             expect(
                 sut,
-                toCompleteWithResult: .failure(.invalidData)
+                toCompleteWithResult: .failure(RemoteFeedLoader.Error.invalidData)
             ) {
                 client.complete(withStatusCode: statusCode, at: index, data: json)
             }
@@ -66,7 +66,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
 
         expect(
             sut,
-            toCompleteWithResult: .failure(.invalidData)
+            toCompleteWithResult: .failure(RemoteFeedLoader.Error.invalidData)
         ) {
             let invalidJSON = Data("invalid json".utf8)
             client.complete(withStatusCode: 200, data: invalidJSON)
