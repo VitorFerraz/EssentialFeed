@@ -12,7 +12,7 @@ public final class RemoteFeedLoader: FeedLoader {
     private let client: HTTPClient
     public typealias Result = LoadFeedResult<Error>
     
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift.Error {
         case connectivity
         case invalidData
     }
