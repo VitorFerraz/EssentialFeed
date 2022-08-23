@@ -11,20 +11,7 @@ import EssentialFeed
 final class EssentialFeedTestsAPIEndToEndTests: XCTestCase {
     
     func test_endToEndTestServerGETFeedResult_matchesFixedTestAccountData() throws {
-        let testServerURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
-        let client = URLSessionHTTPClient()
-        let loader = RemoteFeedLoader(url: testServerURL, client: client)
-        
-        let expectation = expectation(description: "wait for load completion")
-        var receivedResult: LoadFeedResult?
-        loader.load { result in
-            receivedResult = result
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 5)
-        let result = try XCTUnwrap(receivedResult)
-        switch result {
+        switch getFeedResult() {
         case .success(let items):
             XCTAssertEqual(items.count, 8, "Expected 8 items in the test account feed")
             XCTAssertEqual(items[0], expectedItem(at: 0))
@@ -37,10 +24,28 @@ final class EssentialFeedTestsAPIEndToEndTests: XCTestCase {
             XCTAssertEqual(items[7], expectedItem(at: 7))
         case .failure(let error):
             XCTFail("Expected successful feed result, got \(error) instead")
+        case .none:
+            XCTFail("Expected successful feed result, got no result instead")
         }
     }
     
     // MARK: - Helpers
+    private func getFeedResult(file: StaticString = #file, line: UInt = #line) -> LoadFeedResult? {
+        let testServerURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
+        let client = URLSessionHTTPClient()
+        let loader = RemoteFeedLoader(url: testServerURL, client: client)
+        
+        let exp = expectation(description: "Wait for load completion")
+        
+        var receivedResult: LoadFeedResult?
+        loader.load { result in
+            receivedResult = result
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 5.0)
+        
+        return receivedResult
+    }
     
     private func expectedItem(at index: Int) -> FeedItem {
         FeedItem(
