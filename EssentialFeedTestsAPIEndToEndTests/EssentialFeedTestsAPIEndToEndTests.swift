@@ -10,7 +10,7 @@ import EssentialFeed
 
 final class EssentialFeedTestsAPIEndToEndTests: XCTestCase {
     
-    func test_endToEndTestServerGETFeedResult_matchesFixedTestAccountData() throws {
+    func test_endToEndTestServerGETFeedResult_matchesFixedTestAccountData() {
         switch getFeedResult() {
         case .success(let items):
             XCTAssertEqual(items.count, 8, "Expected 8 items in the test account feed")
