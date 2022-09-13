@@ -7,13 +7,6 @@
 
 import Foundation
 
-struct RemoteFeedItem: Equatable, Codable {
-    let id: UUID
-    let description: String?
-    let location: String?
-    let image: URL
-}
-
 struct FeedItemsMapper {
     private struct Root: Codable {
         let items: [RemoteFeedItem]
