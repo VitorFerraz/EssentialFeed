@@ -45,7 +45,7 @@ final class FeedStoreSpy: FeedStore {
         insertionCompletions[index](nil)
     }
     
-    func retrive() {
+    func retrieve() {
         receivedMessages.append(.retrieve)
     }
 }
