@@ -87,9 +87,9 @@ final class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     func test_load_deliversItemsOn200HTTPResponseWithJSONItems() {
         let (sut, client) = makeSUT()
-        let item1 = FeedItem.fixture()
+        let item1 = FeedImage.fixture()
        
-        let item2 = FeedItem.fixture(
+        let item2 = FeedImage.fixture(
             description: "a description",
             location: "a location"
         )
@@ -194,18 +194,18 @@ final class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     }
 }
 
-private extension FeedItem {
+private extension FeedImage {
     static func fixture(
         id: UUID = UUID(),
         description: String? = nil,
         location: String? = nil,
         imageURL: URL = URL(string: "http://a-url.com")!
-    ) -> (model: FeedItem, json: [String: Any]) {
-        let item = FeedItem(
+    ) -> (model: FeedImage, json: [String: Any]) {
+        let item = FeedImage(
             id: id,
             description: description,
             location: location,
-            imageURL: imageURL
+            url: imageURL
         )
         
         let json = [
