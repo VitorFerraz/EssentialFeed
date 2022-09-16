@@ -18,10 +18,6 @@ extension Date {
     }
 }
 
-var anyNSError: NSError {
-    NSError(domain: "", code: 1)
-}
-
 func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
     let models = [uniqueImage(), uniqueImage()]
     let local = models.map {
@@ -37,8 +33,4 @@ func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
 
 func uniqueImage() -> FeedImage {
     FeedImage(id: UUID(), url: anyURL)
-}
-
-var anyURL: URL {
-    URL(string: "http://any-url.com")!
 }
