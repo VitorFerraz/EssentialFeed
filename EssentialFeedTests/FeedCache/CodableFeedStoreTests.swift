@@ -59,11 +59,25 @@ final class CodableFeedStore {
         do {
             let encoder = JSONEncoder()
             let cache = Cache(feed: feed.map(CodableFeedImage.init), timestamp: timestamp)
-            let encoded = try! encoder.encode(cache)
+            let encoded = try encoder.encode(cache)
             try encoded.write(to: storeURL)
             completion(nil)
         } catch {
             completion(error)
+        }
+    }
+    
+    func deleteCachedFeed(completion: @escaping FeedStore.DeletionCompletion) {
+        guard FileManager.default.fileExists(atPath: storeURL.path) else {
+            return completion(nil)
+        }
+        
+        do {
+            try FileManager.default.removeItem(at: storeURL)
+            completion(nil)
+        } catch {
+            completion(error)
+
         }
     }
 }
@@ -150,9 +164,51 @@ final class CodableFeedStoreTests: XCTestCase {
         
         XCTAssertNotNil(insertionError, "expected cache insertion to fail with an error")
     }
+    
+    func test_delete_hasNoSideEffectsOnEmptyCache() {
+        let sut = makeSUT()
+        
+        let deletionError = deleteCache(from: sut)
+        XCTAssertNil(deletionError)
+    }
+    
+    func test_delete_emptiesPreviouslyInsertedCache() {
+        let sut = makeSUT()
+        
+        insert((uniqueImageFeed().local, Date()), to: sut)
+        
+        let deletionError = deleteCache(from: sut)
+        XCTAssertNil(deletionError, "Expected non-empty cache deletion to succeed")
+        
+        expect(sut, toRetrive: .empty)
+    }
+    
+    func test_delete_deliversErrorOnDeletionError() {
+        let nonDeletePErmissionURL = cachesDirectory()
+        let sut = makeSUT(storeURL: nonDeletePErmissionURL)
+        
+        let deletionError = deleteCache(from: sut)
+        
+        XCTAssertNotNil(deletionError, "Expected cache deletion to fail")
+        expect(sut, toRetrive: .empty)
+    }
 
     
     //MARK: - Helpers
+    
+    @discardableResult
+    private func deleteCache(from sut: CodableFeedStore) -> Error? {
+        let exp = expectation(description: "wait for cache insertion")
+        var deletionError: Error?
+        
+        sut.deleteCachedFeed { error in
+            deletionError = error
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1)
+        
+        return deletionError
+    }
     
     @discardableResult
     private func insert(_ cache: (feed: [LocalFeedImage], timestamp: Date), to sut: CodableFeedStore) -> Error? {
@@ -214,11 +270,11 @@ final class CodableFeedStoreTests: XCTestCase {
     }
     
     func testSpecificStoreURL() -> URL {
-        FileManager.default.urls(
-            for: .cachesDirectory,
-            in: .userDomainMask
-        )
-        .first!
+        cachesDirectory()
         .appendingPathComponent("\(type(of: self)).store")
+    }
+    
+    private func cachesDirectory() -> URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
 }
