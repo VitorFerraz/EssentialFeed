@@ -8,7 +8,7 @@
 import XCTest
 import EssentialFeed
 
-final class CodableFeedStore {
+final class CodableFeedStore: FeedStore {
     private struct Cache: Codable {
         let feed: [CodableFeedImage]
         let timestamp: Date
@@ -42,7 +42,7 @@ final class CodableFeedStore {
         self.storeURL = storeURL
     }
     
-    func retrieve(completion: @escaping FeedStore.RetrievalCompletion) {
+    func retrieve(completion: @escaping RetrievalCompletion) {
         guard let data = try? Data(contentsOf: storeURL) else {
             return completion(.empty)
         }
@@ -55,10 +55,10 @@ final class CodableFeedStore {
         }
     }
     
-    func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping FeedStore.InsertionCompletion) {
+    func insert(_ feed: [LocalFeedImage], currentDate: Date, completion: @escaping InsertionCompletion) {
         do {
             let encoder = JSONEncoder()
-            let cache = Cache(feed: feed.map(CodableFeedImage.init), timestamp: timestamp)
+            let cache = Cache(feed: feed.map(CodableFeedImage.init), timestamp: currentDate)
             let encoded = try encoder.encode(cache)
             try encoded.write(to: storeURL)
             completion(nil)
@@ -67,7 +67,7 @@ final class CodableFeedStore {
         }
     }
     
-    func deleteCachedFeed(completion: @escaping FeedStore.DeletionCompletion) {
+    func deleteCachedFeed(completion: @escaping DeletionCompletion) {
         guard FileManager.default.fileExists(atPath: storeURL.path) else {
             return completion(nil)
         }
@@ -215,7 +215,7 @@ final class CodableFeedStoreTests: XCTestCase {
         let exp = expectation(description: "wait for cache insertion")
         var insertionError: Error?
         
-        sut.insert(cache.feed, timestamp: cache.timestamp) { error in
+        sut.insert(cache.feed, currentDate: cache.timestamp) { error in
             insertionError = error
             exp.fulfill()
         }
