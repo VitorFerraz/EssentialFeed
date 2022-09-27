@@ -25,9 +25,9 @@ final class FeedStoreSpy: FeedStore {
         receivedMessages.append(.deleteCachedFeed)
     }
     
-    func insert(_ feed: [LocalFeedImage], currentDate: Date, completion: @escaping InsertionCompletion) {
+    func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
         insertionCompletions.append(completion)
-        receivedMessages.append(.insert(feed, currentDate))
+        receivedMessages.append(.insert(feed, timestamp))
     }
     
     func completeDeletion(with error: Error, at index: Int = 0) {
