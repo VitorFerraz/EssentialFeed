@@ -112,8 +112,8 @@ final class CodableFeedStoreTests: XCTestCase {
     }
     
     func test_delete_deliversErrorOnDeletionError() {
-        let nonDeletePErmissionURL = cachesDirectory()
-        let sut = makeSUT(storeURL: nonDeletePErmissionURL)
+        let nonDeletePermissionURL = cachesDirectory()
+        let sut = makeSUT(storeURL: nonDeletePermissionURL)
         
         let deletionError = deleteCache(from: sut)
         
@@ -154,7 +154,7 @@ final class CodableFeedStoreTests: XCTestCase {
     
     @discardableResult
     private func deleteCache(from sut: FeedStore) -> Error? {
-        let exp = expectation(description: "wait for cache insertion")
+        let exp = expectation(description: "wait for cache deletion")
         var deletionError: Error?
         
         sut.deleteCachedFeed { error in
