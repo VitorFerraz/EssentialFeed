@@ -85,7 +85,6 @@ public final class CodableFeedStore: FeedStore {
                 completion(nil)
             } catch {
                 completion(error)
-                
             }
         }
     }
