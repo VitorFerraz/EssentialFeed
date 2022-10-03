@@ -38,6 +38,13 @@
             BlueprintName = "EssentialFeed"
             ReferencedContainer = "container:EssentialFeed.xcodeproj">
          </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "4938D6C128EA6510000A1F97"
+            BuildableName = "EssentialFeedCacheIntegrationTests.xctest"
+            BlueprintName = "EssentialFeedCacheIntegrationTests"
+            ReferencedContainer = "container:EssentialFeed.xcodeproj">
+         </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
          <TestableReference
