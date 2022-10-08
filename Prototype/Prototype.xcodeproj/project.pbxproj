@@ -13,6 +13,8 @@
 		49B6B80528F2183B002D07F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49B6B80428F2183B002D07F4 /* Assets.xcassets */; };
 		49B6B80828F2183B002D07F4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49B6B80628F2183B002D07F4 /* LaunchScreen.storyboard */; };
 		49B6B81028F21E13002D07F4 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B6B80F28F21E13002D07F4 /* FeedViewController.swift */; };
+		49B6B81228F21EE0002D07F4 /* FeedImageViewModel+PrototypeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B6B81128F21EE0002D07F4 /* FeedImageViewModel+PrototypeData.swift */; };
+		49B6B81428F21F42002D07F4 /* FeedImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B6B81328F21F42002D07F4 /* FeedImageCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		49B6B80728F2183B002D07F4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		49B6B80928F2183B002D07F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		49B6B80F28F21E13002D07F4 /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
+		49B6B81128F21EE0002D07F4 /* FeedImageViewModel+PrototypeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedImageViewModel+PrototypeData.swift"; sourceTree = "<group>"; };
+		49B6B81328F21F42002D07F4 /* FeedImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +67,8 @@
 				49B6B80628F2183B002D07F4 /* LaunchScreen.storyboard */,
 				49B6B80928F2183B002D07F4 /* Info.plist */,
 				49B6B80F28F21E13002D07F4 /* FeedViewController.swift */,
+				49B6B81128F21EE0002D07F4 /* FeedImageViewModel+PrototypeData.swift */,
+				49B6B81328F21F42002D07F4 /* FeedImageCell.swift */,
 			);
 			path = Prototype;
 			sourceTree = "<group>";
@@ -141,6 +147,8 @@
 				49B6B7FC28F2183B002D07F4 /* AppDelegate.swift in Sources */,
 				49B6B81028F21E13002D07F4 /* FeedViewController.swift in Sources */,
 				49B6B7FE28F2183B002D07F4 /* SceneDelegate.swift in Sources */,
+				49B6B81228F21EE0002D07F4 /* FeedImageViewModel+PrototypeData.swift in Sources */,
+				49B6B81428F21F42002D07F4 /* FeedImageCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
