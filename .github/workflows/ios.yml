@@ -8,17 +8,24 @@ on:
 
 jobs:
   build:
-    name: Build and Test default scheme using any available iPhone simulator
+    name: Build and Test
     runs-on: macos-12
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Build and Test
+      - name: Build and Test for iOS
         env:
           scheme: ${{ 'default' }}
           platform: ${{ 'iOS Simulator' }}
         run: |
           xcodebuild clean build test -project EssentialFeed.xcodeproj -scheme "CI_iOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUITED=NO
+      - name: Build and Test for macOS
+        env:
+          scheme: ${{ 'default' }}
+          platform: ${{ 'macOS' }}
+        run: |
+          xcodebuild clean build test -project EssentialFeed.xcodeproj -scheme "CI_macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUITED=NO -sdk macosx -destination "platform=macOS" ONLY_ACTIVE_ARCH=YES
+
 
      
