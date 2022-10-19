@@ -16,7 +16,6 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
             tableView.reloadData()
         }
     }
-    private var tasks = [IndexPath: FeedImageDataLoaderTask]()
     private var cellControllers = [IndexPath: FeedImageCellController]()
 
     
