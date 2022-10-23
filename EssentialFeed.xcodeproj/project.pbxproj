@@ -58,6 +58,7 @@
 		49B6B83028F39E81002D07F4 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B6B82F28F39E81002D07F4 /* FeedViewController.swift */; };
 		49BB854A28B2D99A00EAE320 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BB854928B2D99A00EAE320 /* XCTestCase+MemoryLeakTracking.swift */; };
 		49BB854C28B2EBC700EAE320 /* URLSessionHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BB854B28B2EBC700EAE320 /* URLSessionHTTPClient.swift */; };
+		49CD079029056C600022FF4A /* FeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CD078F29056C600022FF4A /* FeedViewModel.swift */; };
 		49F34B4228F72C9200590414 /* FeedImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F34B4128F72C9200590414 /* FeedImageCell.swift */; };
 		49F34B4428F757A600590414 /* UIView+Shimmering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F34B4328F757A600590414 /* UIView+Shimmering.swift */; };
 		49F793B928A9A964004E43A9 /* URLSessionHTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F793B828A9A964004E43A9 /* URLSessionHTTPClientTests.swift */; };
@@ -162,6 +163,7 @@
 		49B6B82F28F39E81002D07F4 /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		49BB854928B2D99A00EAE320 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		49BB854B28B2EBC700EAE320 /* URLSessionHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClient.swift; sourceTree = "<group>"; };
+		49CD078F29056C600022FF4A /* FeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewModel.swift; sourceTree = "<group>"; };
 		49F34B4128F72C9200590414 /* FeedImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageCell.swift; sourceTree = "<group>"; };
 		49F34B4328F757A600590414 /* UIView+Shimmering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shimmering.swift"; sourceTree = "<group>"; };
 		49F793B828A9A964004E43A9 /* URLSessionHTTPClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClientTests.swift; sourceTree = "<group>"; };
@@ -369,6 +371,7 @@
 		495B97BD29001EDC0037D51D /* FeedUI */ = {
 			isa = PBXGroup;
 			children = (
+				49CD078E29056C5A0022FF4A /* Models */,
 				495B97C42900268A0037D51D /* Composers */,
 				495B97BF29001EEB0037D51D /* Views */,
 				495B97BE29001EE60037D51D /* Controllers */,
@@ -463,6 +466,14 @@
 				49610CA328D4A0FC00B7241D /* SharedTestHelpers.swift */,
 			);
 			path = Helper;
+			sourceTree = "<group>";
+		};
+		49CD078E29056C5A0022FF4A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				49CD078F29056C600022FF4A /* FeedViewModel.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -773,6 +784,7 @@
 				49B6B83028F39E81002D07F4 /* FeedViewController.swift in Sources */,
 				49F34B4228F72C9200590414 /* FeedImageCell.swift in Sources */,
 				495B97C3290022830037D51D /* FeedImageCellController.swift in Sources */,
+				49CD079029056C600022FF4A /* FeedViewModel.swift in Sources */,
 				495B97C6290026950037D51D /* FeedUIComposer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -951,6 +963,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -985,6 +998,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
