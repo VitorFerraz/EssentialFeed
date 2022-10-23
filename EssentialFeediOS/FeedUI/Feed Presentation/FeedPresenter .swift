@@ -30,7 +30,6 @@ final class FeedPresenter {
     var feedView: FeedView?
     var loadingView: FeedLoadingView?
 
-    
     init(feedLoader: FeedLoader) {
         self.feedLoader = feedLoader
     }
