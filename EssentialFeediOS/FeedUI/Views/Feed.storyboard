@@ -126,6 +126,7 @@ Label</string>
                         <connections>
                             <outlet property="dataSource" destination="wHv-Yw-Ga3" id="WbF-e2-etf"/>
                             <outlet property="delegate" destination="wHv-Yw-Ga3" id="Kab-1z-o66"/>
+                            <outlet property="prefetchDataSource" destination="wHv-Yw-Ga3" id="MLV-Pi-hoF"/>
                         </connections>
                     </tableView>
                     <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Iw7-UZ-LL1">
