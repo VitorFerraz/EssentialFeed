@@ -27,7 +27,7 @@
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         </view>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="FeedImageCell" rowHeight="580" id="v9c-jk-ibP" customClass="FeedImageCell" customModule="Prototype" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="FeedImageCell" rowHeight="580" id="v9c-jk-ibP" customClass="FeedImageCell" customModule="EssentialFeediOS">
                                 <rect key="frame" x="0.0" y="60" width="390" height="580"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="v9c-jk-ibP" id="pQh-09-8Sz">
@@ -80,6 +80,9 @@ Label</string>
                                                             <buttonConfiguration key="configuration" style="plain" title="↻">
                                                                 <fontDescription key="titleFontDescription" type="system" pointSize="60"/>
                                                             </buttonConfiguration>
+                                                            <connections>
+                                                                <action selector="retryButtonTapped" destination="v9c-jk-ibP" eventType="touchUpInside" id="cJf-Ne-eCf"/>
+                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -121,6 +124,14 @@ Label</string>
                                         <constraint firstItem="3Kj-O8-re5" firstAttribute="leading" secondItem="pQh-09-8Sz" secondAttribute="leadingMargin" constant="6" id="xRi-pT-Kpq"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="descriptionLabel" destination="6N4-Mx-KwY" id="ti6-SI-409"/>
+                                    <outlet property="feedImageContainer" destination="Ug8-Ld-BII" id="hkH-wx-Iza"/>
+                                    <outlet property="feedImageRetryButton" destination="iaq-AR-Pox" id="aIM-F0-rmk"/>
+                                    <outlet property="feedImageView" destination="NRN-nn-9P4" id="AGz-1T-iQI"/>
+                                    <outlet property="locationContainer" destination="lK3-jU-NWR" id="P53-tq-OZ1"/>
+                                    <outlet property="locationLabel" destination="wrI-9F-Cjd" id="9hr-LI-Kwf"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
