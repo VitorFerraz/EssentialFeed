@@ -44,4 +44,8 @@ final class FeedPresenter {
     func didFinishLoadingFeed(with error: Error) {
         loadingView.display(FeedLoadingViewModel(isLoading: false))
     }
+    
+    static var title: String {
+        "My Feed"
+    }
 }
