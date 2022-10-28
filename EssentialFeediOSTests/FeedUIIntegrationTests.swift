@@ -16,7 +16,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         
         sut.loadViewIfNeeded()
         let bundle = Bundle(for: FeedViewController.self)
- 
+        
         XCTAssertEqual(sut.title, localized( "FEED_VIEW_TITLE"))
     }
     
