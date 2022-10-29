@@ -11,6 +11,18 @@ import EssentialFeediOS
 
 final class FeedUIIntegrationTests: XCTestCase {
     
+    func test_loadFeedCompletion_dipatchesFromBackgroundToMainThread() {
+        let (sut, loader) = makeSUT()
+        sut.loadViewIfNeeded()
+        let exp = expectation(description: "wait for completion")
+        DispatchQueue.global().async {
+            loader.completeFeedLoading(at: 0)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
+    }
+    
     func test_feedView_hasTitle() {
         let (sut, _) = makeSUT()
         
