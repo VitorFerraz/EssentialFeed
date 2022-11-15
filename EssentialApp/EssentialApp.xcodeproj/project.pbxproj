@@ -18,6 +18,8 @@
 		4970F0F929187C7C00DAC2A5 /* EssentialAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970F0F829187C7C00DAC2A5 /* EssentialAppUITestsLaunchTests.swift */; };
 		49A339822924321200F8FFC8 /* FeedLoaderWithFallbackCompositeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A339812924321200F8FFC8 /* FeedLoaderWithFallbackCompositeTests.swift */; };
 		49A339842924430300F8FFC8 /* FeedLoaderWithFallbackComposite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A339832924430300F8FFC8 /* FeedLoaderWithFallbackComposite.swift */; };
+		49A339862924436100F8FFC8 /* FeedImageDataLoaderWithFallbackComposite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A339852924436100F8FFC8 /* FeedImageDataLoaderWithFallbackComposite.swift */; };
+		49A33988292444EC00F8FFC8 /* FeedImageDataLoaderWithFallbackCompositeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A33987292444EC00F8FFC8 /* FeedImageDataLoaderWithFallbackCompositeTests.swift */; };
 		49F6A45D2918840400D9901B /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49F6A45B2918840400D9901B /* EssentialFeed.framework */; };
 		49F6A45E2918840400D9901B /* EssentialFeed.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 49F6A45B2918840400D9901B /* EssentialFeed.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		49F6A45F2918840400D9901B /* EssentialFeediOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49F6A45C2918840400D9901B /* EssentialFeediOS.framework */; };
@@ -72,6 +74,8 @@
 		4970F0F829187C7C00DAC2A5 /* EssentialAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssentialAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		49A339812924321200F8FFC8 /* FeedLoaderWithFallbackCompositeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoaderWithFallbackCompositeTests.swift; sourceTree = "<group>"; };
 		49A339832924430300F8FFC8 /* FeedLoaderWithFallbackComposite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoaderWithFallbackComposite.swift; sourceTree = "<group>"; };
+		49A339852924436100F8FFC8 /* FeedImageDataLoaderWithFallbackComposite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageDataLoaderWithFallbackComposite.swift; sourceTree = "<group>"; };
+		49A33987292444EC00F8FFC8 /* FeedImageDataLoaderWithFallbackCompositeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageDataLoaderWithFallbackCompositeTests.swift; sourceTree = "<group>"; };
 		49F6A45B2918840400D9901B /* EssentialFeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		49F6A45C2918840400D9901B /* EssentialFeediOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeediOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -135,6 +139,7 @@
 				4970F0E029187C7B00DAC2A5 /* LaunchScreen.storyboard */,
 				4970F0E329187C7B00DAC2A5 /* Info.plist */,
 				49A339832924430300F8FFC8 /* FeedLoaderWithFallbackComposite.swift */,
+				49A339852924436100F8FFC8 /* FeedImageDataLoaderWithFallbackComposite.swift */,
 			);
 			path = EssentialApp;
 			sourceTree = "<group>";
@@ -144,6 +149,7 @@
 			children = (
 				4970F0EC29187C7C00DAC2A5 /* EssentialAppTests.swift */,
 				49A339812924321200F8FFC8 /* FeedLoaderWithFallbackCompositeTests.swift */,
+				49A33987292444EC00F8FFC8 /* FeedImageDataLoaderWithFallbackCompositeTests.swift */,
 			);
 			path = EssentialAppTests;
 			sourceTree = "<group>";
@@ -302,6 +308,7 @@
 				4970F0D629187C7900DAC2A5 /* AppDelegate.swift in Sources */,
 				49A339842924430300F8FFC8 /* FeedLoaderWithFallbackComposite.swift in Sources */,
 				4970F0D829187C7900DAC2A5 /* SceneDelegate.swift in Sources */,
+				49A339862924436100F8FFC8 /* FeedImageDataLoaderWithFallbackComposite.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,6 +318,7 @@
 			files = (
 				49A339822924321200F8FFC8 /* FeedLoaderWithFallbackCompositeTests.swift in Sources */,
 				4970F0ED29187C7C00DAC2A5 /* EssentialAppTests.swift in Sources */,
+				49A33988292444EC00F8FFC8 /* FeedImageDataLoaderWithFallbackCompositeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
