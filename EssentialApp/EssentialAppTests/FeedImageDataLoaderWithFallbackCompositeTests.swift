@@ -124,35 +124,6 @@ final class FeedImageDataLoaderWithFallbackCompositeTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    private var anyURL: URL {
-        URL(string: "http://any-url.com")!
-    }
-    
-    func anyData() -> Data {
-        Data("any data".utf8)
-    }
-    
-    private var anyNSError: NSError {
-        NSError(domain: "any error", code: 0)
-    }
-    
-    private func uniqueImage() -> FeedImage {
-        FeedImage(id: UUID(), url: anyURL)
-    }
-    
-    private func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
-        let models = [uniqueImage(), uniqueImage()]
-        let local = models.map {
-            LocalFeedImage(
-                id: $0.id,
-                description: $0.description,
-                location: $0.location,
-                url: $0.url
-            )
-        }
-        return (models, local)
-    }
-    
     private class LoaderSpy: FeedImageDataLoader {
         private var messages = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
         private(set) var cancelledURLs = [URL]()
