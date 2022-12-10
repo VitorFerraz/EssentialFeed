@@ -105,6 +105,7 @@ Label</string>
                                                         </button>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <accessibility key="accessibilityConfiguration" identifier="feed-image-view"/>
                                                     <constraints>
                                                         <constraint firstItem="NRN-nn-9P4" firstAttribute="leading" secondItem="Ug8-Ld-BII" secondAttribute="leading" id="6wf-lD-PbM"/>
                                                         <constraint firstItem="iaq-AR-Pox" firstAttribute="leading" secondItem="Ug8-Ld-BII" secondAttribute="leading" id="98P-yr-GG2"/>
@@ -143,6 +144,7 @@ Label</string>
                                         <constraint firstItem="3Kj-O8-re5" firstAttribute="leading" secondItem="pQh-09-8Sz" secondAttribute="leadingMargin" constant="6" id="xRi-pT-Kpq"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <accessibility key="accessibilityConfiguration" identifier="feed-image-cell"/>
                                 <connections>
                                     <outlet property="descriptionLabel" destination="6N4-Mx-KwY" id="ti6-SI-409"/>
                                     <outlet property="feedImageContainer" destination="Ug8-Ld-BII" id="hkH-wx-Iza"/>
