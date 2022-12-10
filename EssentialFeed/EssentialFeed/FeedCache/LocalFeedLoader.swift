@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class LocalFeedLoader: FeedLoader {
+public final class LocalFeedLoader: FeedLoader, FeedCache {
     private let store: FeedStore
     private let currentDate: () -> Date
     
