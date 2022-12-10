@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		490366432945169200E99623 /* DebuggingSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490366422945169200E99623 /* DebuggingSceneDelegate.swift */; };
 		4933C378293D721B005CB04C /* FeedLoaderCacheDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4933C377293D721B005CB04C /* FeedLoaderCacheDecorator.swift */; };
 		4970F0D629187C7900DAC2A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970F0D529187C7900DAC2A5 /* AppDelegate.swift */; };
 		4970F0D829187C7900DAC2A5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970F0D729187C7900DAC2A5 /* SceneDelegate.swift */; };
@@ -78,6 +79,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		490366422945169200E99623 /* DebuggingSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggingSceneDelegate.swift; sourceTree = "<group>"; };
 		4933C377293D721B005CB04C /* FeedLoaderCacheDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoaderCacheDecorator.swift; sourceTree = "<group>"; };
 		4970F0D229187C7900DAC2A5 /* EssentialApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssentialApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4970F0D529187C7900DAC2A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 				49A339832924430300F8FFC8 /* FeedLoaderWithFallbackComposite.swift */,
 				49A339852924436100F8FFC8 /* FeedImageDataLoaderWithFallbackComposite.swift */,
 				498EB7832944FF8D00D1F08D /* FeedImageDataLoaderDecorator.swift */,
+				490366422945169200E99623 /* DebuggingSceneDelegate.swift */,
 			);
 			path = EssentialApp;
 			sourceTree = "<group>";
@@ -406,6 +409,7 @@
 				4970F0D629187C7900DAC2A5 /* AppDelegate.swift in Sources */,
 				49A339842924430300F8FFC8 /* FeedLoaderWithFallbackComposite.swift in Sources */,
 				4933C378293D721B005CB04C /* FeedLoaderCacheDecorator.swift in Sources */,
+				490366432945169200E99623 /* DebuggingSceneDelegate.swift in Sources */,
 				498EB7842944FF8D00D1F08D /* FeedImageDataLoaderDecorator.swift in Sources */,
 				4970F0D829187C7900DAC2A5 /* SceneDelegate.swift in Sources */,
 				49A339862924436100F8FFC8 /* FeedImageDataLoaderWithFallbackComposite.swift in Sources */,
