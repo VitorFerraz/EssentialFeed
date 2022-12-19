@@ -168,6 +168,9 @@ Label</string>
                             <action selector="refresh" destination="wHv-Yw-Ga3" eventType="valueChanged" id="GCT-YT-Mh2"/>
                         </connections>
                     </refreshControl>
+                    <connections>
+                        <outlet property="errorView" destination="0fy-jh-fBg" id="l0I-Vv-4BG"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6d9-Q0-K9u" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
