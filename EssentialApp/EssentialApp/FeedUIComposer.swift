@@ -8,13 +8,13 @@
 import UIKit
 import EssentialFeediOS
 import EssentialFeed
+import Combine
 
 public final class FeedUIComposer {
     private init() {}
     
-    public static func feedComposedWith(feedLoader: FeedLoader, imageLoader: FeedImageDataLoader) -> FeedViewController {
-        let presentationAdapter = FeedLoaderPresentationAdapter(feedLoader:
-            MainQueueDispatchDecorator(decoratee: feedLoader))
+    public static func feedComposedWith(feedLoader: @escaping () -> FeedLoader.Publisher, imageLoader: FeedImageDataLoader) -> FeedViewController {
+        let presentationAdapter = FeedLoaderPresentationAdapter(feedLoader: { feedLoader().dispatchOnMainQueue() })
         
         let feedController = makeFeedViewController(
             delegate: presentationAdapter,
@@ -102,25 +102,29 @@ private final class FeedViewAdapter: FeedView {
 }
 
 private final class FeedLoaderPresentationAdapter: FeedViewControllerDelegate {
-    private let feedLoader: FeedLoader
+    private let feedLoader: () -> FeedLoader.Publisher
     var presenter: FeedPresenter?
+    var cancellable: AnyCancellable?
     
-    init(feedLoader: FeedLoader) {
+    init(feedLoader: @escaping () -> FeedLoader.Publisher) {
         self.feedLoader = feedLoader
     }
     
     func didRequestFeedRefresh() {
         presenter?.didStartLoadingFeed()
-        
-        feedLoader.load { [weak self] result in
-            switch result {
-            case let .success(feed):
-                self?.presenter?.didFinishLoadingFeed(with: feed)
-                
-            case let .failure(error):
+        cancellable = feedLoader().sink { [weak self] completion in
+            switch completion {
+            case .failure(let error):
                 self?.presenter?.didFinishLoadingFeed(with: error)
+            case .finished: break
             }
+        } receiveValue: { [weak self] feed in
+            self?.presenter?.didFinishLoadingFeed(with: feed)
         }
+    }
+    
+    deinit {
+        cancellable = nil
     }
 }
 
