@@ -10,7 +10,7 @@ import EssentialFeed
 import EssentialFeedAPI
 
 class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
-
+    
     func test_init_doesNotRequestDataFromURL() {
         let (_, client) = makeSUT()
         
@@ -45,10 +45,10 @@ class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
         })
     }
     
-    func test_load_deliversErrorOnNon200HTTPResponse() {
+    func test_load_deliversErrorOnNon2xxHTTPResponse() {
         let (sut, client) = makeSUT()
         
-        let samples = [199, 201, 300, 400, 500]
+        let samples = [199, 150, 300, 400, 500]
         
         samples.enumerated().forEach { index, code in
             expect(sut, toCompleteWith: failure(.invalidData), when: {
@@ -58,25 +58,30 @@ class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
         }
     }
     
-    func test_load_deliversErrorOn200HTTPResponseWithInvalidJSON() {
+    func test_load_deliversErrorOn2xxHTTPResponseWithInvalidJSON() {
         let (sut, client) = makeSUT()
+        let samples = [200, 201, 250, 280, 299]
+        samples.enumerated().forEach { index, code in
+            expect(sut, toCompleteWith: failure(.invalidData), when: {
+                let invalidJSON = Data("invalid json".utf8)
+                client.complete(withStatusCode: code, data: invalidJSON, at: index)
+            })
+        }
         
-        expect(sut, toCompleteWith: failure(.invalidData), when: {
-            let invalidJSON = Data("invalid json".utf8)
-            client.complete(withStatusCode: 200, data: invalidJSON)
-        })
     }
     
-    func test_load_deliversNoItemsOn200HTTPResponseWithEmptyJSONList() {
+    func test_load_deliversNoItemsOn2xxHTTPResponseWithEmptyJSONList() {
         let (sut, client) = makeSUT()
-
-        expect(sut, toCompleteWith: .success([]), when: {
-            let emptyListJSON = makeItemsJSON([])
-            client.complete(withStatusCode: 200, data: emptyListJSON)
-        })
+        let samples = [200, 201, 250, 280, 299]
+        samples.enumerated().forEach { index, code in
+            expect(sut, toCompleteWith: .success([]), when: {
+                let emptyListJSON = makeItemsJSON([])
+                client.complete(withStatusCode: code, data: emptyListJSON, at: index)
+            })
+        }
     }
     
-    func test_load_deliversItemsOn200HTTPResponseWithJSONItems() {
+    func test_load_deliversItemsOn2xxHTTPResponseWithJSONItems() {
         let (sut, client) = makeSUT()
         
         let item1 = makeItem(
@@ -91,10 +96,13 @@ class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
         
         let items = [item1.model, item2.model]
         
-        expect(sut, toCompleteWith: .success(items), when: {
-            let json = makeItemsJSON([item1.json, item2.json])
-            client.complete(withStatusCode: 200, data: json)
-        })
+        let samples = [200, 201, 250, 280, 299]
+        samples.enumerated().forEach { index, code in
+            expect(sut, toCompleteWith: .success(items), when: {
+                let json = makeItemsJSON([item1.json, item2.json])
+                client.complete(withStatusCode: code, data: json, at: index)
+            })
+        }
     }
     
     func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
@@ -104,7 +112,7 @@ class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
         
         var capturedResults = [RemoteFeedLoader.Result]()
         sut?.load { capturedResults.append($0) }
-
+        
         sut = nil
         client.complete(withStatusCode: 200, data: makeItemsJSON([]))
         
@@ -124,7 +132,7 @@ class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
     private func failure(_ error: RemoteImageCommentsLoader.Error) -> RemoteImageCommentsLoader.Result {
         return .failure(error)
     }
-        
+    
     private func makeItem(id: UUID, description: String? = nil, location: String? = nil, imageURL: URL) -> (model: FeedImage, json: [String: Any]) {
         let item = FeedImage(id: id, description: description, location: location, url: imageURL)
         
@@ -165,6 +173,6 @@ class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
         
         wait(for: [exp], timeout: 1.0)
     }
-
-
+    
+    
 }
