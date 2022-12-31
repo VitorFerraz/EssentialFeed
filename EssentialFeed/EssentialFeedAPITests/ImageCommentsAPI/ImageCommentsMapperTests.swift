@@ -39,7 +39,7 @@ class ImageCommentsMapperTests: XCTestCase {
         }
     }
     
-    func test_load_deliversItemsOn2xxHTTPResponseWithJSONItems() throws {
+    func test_map_deliversItemsOn2xxHTTPResponseWithJSONItems() throws {
         let item1 = makeItem(
             id: UUID(),
             message: "a message",
