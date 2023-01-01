@@ -9,6 +9,7 @@ import XCTest
 import EssentialFeed
 import EssentialFeediOS
 import EssentialApp
+import Combine
 
 final class FeedUIIntegrationTests: XCTestCase {
     
@@ -343,7 +344,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         FeedImage(id: UUID(), description: description, location: location, url: url)
     }
     
-    class LoaderSpy: FeedLoader, FeedImageDataLoader {
+    class LoaderSpy: FeedImageDataLoader {
         private var imageRequests = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
         var loadedImageURLs: [URL] {
             imageRequests.map { $0.url}
@@ -353,19 +354,24 @@ final class FeedUIIntegrationTests: XCTestCase {
             feedRequests.count
         }
         
+        
+        
         // MARK: - FeedLoader
         
-        var feedRequests = [(FeedLoader.Result) -> Void]()
-        func load(completion: @escaping (FeedLoader.Result) -> Void) {
-            feedRequests.append(completion)
-        }
+        var feedRequests = [PassthroughSubject<[FeedImage], Error>]()
         
         func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = 0) {
-            feedRequests[index](.success(feed))
+            feedRequests[index].send(feed)
         }
         
         func completeFeedLoadingWithError(at index: Int = 0) {
-            feedRequests[index](.failure(NSError(domain: "", code: -1)))
+            feedRequests[index].send(completion: .failure(NSError(domain: "", code: -1)))
+        }
+        
+        func loadPublisher() -> AnyPublisher<[FeedImage], Error> {
+            let publisher = PassthroughSubject<[FeedImage], Error>()
+            feedRequests.append(publisher)
+            return publisher.eraseToAnyPublisher()
         }
         
         // MARK: - FeedImageDataLoader

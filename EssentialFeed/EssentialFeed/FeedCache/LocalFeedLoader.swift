@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class LocalFeedLoader: FeedLoader, FeedCache {
+public final class LocalFeedLoader: FeedCache {
     private let store: FeedStore
     private let currentDate: () -> Date
     
@@ -41,7 +41,7 @@ extension LocalFeedLoader {
 }
  
 extension LocalFeedLoader {
-    public typealias LoadResult = FeedLoader.Result
+    public typealias LoadResult = Swift.Result<[FeedImage], Error>
     
     public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve { [weak self] result in
