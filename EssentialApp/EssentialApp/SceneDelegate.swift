@@ -15,6 +15,12 @@ import Combine
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
+    private lazy var scheduler: AnyDispatchQueueScheduler = DispatchQueue(
+        label: "com.essentialdeveloper.infra.queue",
+        qos: .userInitiated,
+        attributes: .concurrent
+    ).eraseToAnyScheduler()
+    
     private lazy var httpClient: HTTPClient = {
         URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
     }()
@@ -61,19 +67,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .tryMap(FeedItemsMapper.map)
             .caching(to: localFeedLoader)
             .fallback(to: localFeedLoader.loadPublisher)
+            .subscribe(on: scheduler)
+            .eraseToAnyPublisher()
     }
     
     private func makeLocalImageLoaderWithRemoteFallback(url: URL) -> FeedImageDataLoader.Publisher {
-        let remoteImageLoader = RemoteFeedImageDataLoader(client: httpClient)
         let localImageLoader = LocalFeedImageDataLoader(store: store)
 
         return localImageLoader
             .loadImageDataPublisher(from: url)
-            .fallback {
-                remoteImageLoader
-                    .loadImageDataPublisher(from: url)
+            .fallback { [httpClient, scheduler] in
+                httpClient
+                    .getPublisher(url: url)
+                    .tryMap(FeedImageDataMapper.map)
                     .caching(to: localImageLoader, using: url)
-            }
+                    .subscribe(on: scheduler)
+                    .eraseToAnyPublisher()
+            }.subscribe(on: scheduler)
+            .eraseToAnyPublisher()
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -222,5 +233,51 @@ extension DispatchQueue {
         func schedule(after date: DispatchQueue.SchedulerTimeType, interval: DispatchQueue.SchedulerTimeType.Stride, tolerance: DispatchQueue.SchedulerTimeType.Stride, options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) -> Cancellable {
             DispatchQueue.main.schedule(after: date, interval: interval, tolerance: tolerance, options: options, action)
         }
+    }
+}
+
+typealias AnyDispatchQueueScheduler = AnyScheduler<DispatchQueue.SchedulerTimeType, DispatchQueue.SchedulerOptions>
+
+extension AnyDispatchQueueScheduler {
+    static var immediateOnMainQueue: Self {
+        DispatchQueue.immediateWhenOnMainQueueScheduler.eraseToAnyScheduler()
+    }
+}
+
+extension Scheduler {
+    func eraseToAnyScheduler() -> AnyScheduler<SchedulerTimeType, SchedulerOptions> {
+        AnyScheduler(self)
+    }
+}
+
+struct AnyScheduler<SchedulerTimeType: Strideable, SchedulerOptions>: Scheduler where SchedulerTimeType.Stride: SchedulerTimeIntervalConvertible {
+    private let _now: () -> SchedulerTimeType
+    private let _minimumTolerance: () -> SchedulerTimeType.Stride
+    private let _schedule: (SchedulerOptions?, @escaping () -> Void) -> Void
+    private let _scheduleAfter: (SchedulerTimeType, SchedulerTimeType.Stride, SchedulerOptions?, @escaping () -> Void) -> Void
+    private let _scheduleAfterInterval: (SchedulerTimeType, SchedulerTimeType.Stride, SchedulerTimeType.Stride, SchedulerOptions?, @escaping () -> Void) -> Cancellable
+
+    init<S>(_ scheduler: S) where SchedulerTimeType == S.SchedulerTimeType, SchedulerOptions == S.SchedulerOptions, S: Scheduler {
+        _now = { scheduler.now }
+        _minimumTolerance = { scheduler.minimumTolerance }
+        _schedule = scheduler.schedule(options:_:)
+        _scheduleAfter = scheduler.schedule(after:tolerance:options:_:)
+        _scheduleAfterInterval = scheduler.schedule(after:interval:tolerance:options:_:)
+    }
+    
+    var now: SchedulerTimeType { _now() }
+    
+    var minimumTolerance: SchedulerTimeType.Stride { _minimumTolerance() }
+    
+    func schedule(options: SchedulerOptions?, _ action: @escaping () -> Void) {
+        _schedule(options, action)
+    }
+
+    func schedule(after date: SchedulerTimeType, tolerance: SchedulerTimeType.Stride, options: SchedulerOptions?, _ action: @escaping () -> Void) {
+        _scheduleAfter(date, tolerance, options, action)
+    }
+
+    func schedule(after date: SchedulerTimeType, interval: SchedulerTimeType.Stride, tolerance: SchedulerTimeType.Stride, options: SchedulerOptions?, _ action: @escaping () -> Void) -> Cancellable {
+        _scheduleAfterInterval(date, interval, tolerance, options, action)
     }
 }
