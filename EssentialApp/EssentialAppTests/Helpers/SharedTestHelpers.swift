@@ -41,4 +41,3 @@ func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
     }
     return (models, local)
 }
-
