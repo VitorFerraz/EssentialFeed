@@ -14,12 +14,4 @@ public final class ImageCommentsPresenter {
             bundle: Bundle(for: ImageCommentsPresenter.self),
             comment: "Title for the feed view")
     }
-
-    private var feedLoadError: String {
-        return NSLocalizedString("GENERIC_CONNECTION_ERROR",
-             tableName: "Shared",
-             bundle: Bundle(for: ImageCommentsPresenter.self),
-             comment: "Error message displayed when we can't load the image feed from the server")
-    }
-
 }
