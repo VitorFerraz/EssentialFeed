@@ -31,9 +31,11 @@ public final class ImageCommentsPresenter {
             comment: "Title for the feed view")
     }
     
-    public static func map(_ comments: [ImageComment]) -> ImageCommentsViewModel {
+    public static func map(_ comments: [ImageComment], calendar: Calendar = .current, locale: Locale = .current) -> ImageCommentsViewModel {
         ImageCommentsViewModel(comments: comments.map { comment in
             let formatter = RelativeDateTimeFormatter()
+            formatter.calendar = calendar
+            formatter.locale = locale
             return ImageCommentViewModel(
                 message: comment.message,
                 date: formatter.localizedString(for: comment.createdAt, relativeTo: Date()),
