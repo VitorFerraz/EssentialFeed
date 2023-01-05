@@ -20,6 +20,6 @@ final class SceneDelegateTests: XCTestCase {
         let rootNavigation = try XCTUnwrap(root as? UINavigationController)
         let topController = rootNavigation.topViewController
         
-        XCTAssertTrue(topController is FeedViewController)
+        XCTAssertTrue(topController is ListViewController)
     }
 }
