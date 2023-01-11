@@ -25,13 +25,15 @@ public final class ErrorView: UIButton {
         backgroundColor = #colorLiteral(red: 0.9991759658, green: 0.4186978042, blue: 0.4158208966, alpha: 1)
         hideMessage()
         addTarget(self, action: #selector(hideMessageAnimated), for: .touchUpInside)
+        configureLabel()
     }
     
     private func configureLabel() {
         titleLabel?.textColor = .white
         titleLabel?.textAlignment = .center
         titleLabel?.numberOfLines = 0
-        titleLabel?.font = .systemFont(ofSize: 17)
+        titleLabel?.font = .preferredFont(forTextStyle: .body)
+        titleLabel?.adjustsFontForContentSizeCategory = true
         configuration?.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
     }
     

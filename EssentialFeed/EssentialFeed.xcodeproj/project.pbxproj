@@ -34,6 +34,7 @@
 		4924DEBE2909FA0C002D7DC4 /* UITableView+Dequeueing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4924DEBD2909FA0C002D7DC4 /* UITableView+Dequeueing.swift */; };
 		4924DEC02909FB02002D7DC4 /* UIImageView+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4924DEBF2909FB02002D7DC4 /* UIImageView+Animations.swift */; };
 		49279808296EFFCD0016DC0E /* CellController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49279807296EFFCD0016DC0E /* CellController.swift */; };
+		4927980A296F58D90016DC0E /* LIST_WITH_ERROR_MESSAGE_light_extraExtraExtraLarge.png in Resources */ = {isa = PBXBuildFile; fileRef = 49279809296F58D90016DC0E /* LIST_WITH_ERROR_MESSAGE_light_extraExtraExtraLarge.png */; };
 		4933C376293D71A8005CB04C /* FeedCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4933C375293D71A8005CB04C /* FeedCache.swift */; };
 		4938D6B928E8DF59000A1F97 /* CoreDataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4938D6B828E8DF59000A1F97 /* CoreDataHelpers.swift */; };
 		4938D6BB28E8DFD3000A1F97 /* ManagedCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4938D6BA28E8DFD3000A1F97 /* ManagedCache.swift */; };
@@ -231,6 +232,7 @@
 		4924DEBD2909FA0C002D7DC4 /* UITableView+Dequeueing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Dequeueing.swift"; sourceTree = "<group>"; };
 		4924DEBF2909FB02002D7DC4 /* UIImageView+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Animations.swift"; sourceTree = "<group>"; };
 		49279807296EFFCD0016DC0E /* CellController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellController.swift; sourceTree = "<group>"; };
+		49279809296F58D90016DC0E /* LIST_WITH_ERROR_MESSAGE_light_extraExtraExtraLarge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LIST_WITH_ERROR_MESSAGE_light_extraExtraExtraLarge.png; sourceTree = "<group>"; };
 		4933C375293D71A8005CB04C /* FeedCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCache.swift; sourceTree = "<group>"; };
 		4938D6B828E8DF59000A1F97 /* CoreDataHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelpers.swift; sourceTree = "<group>"; };
 		4938D6BA28E8DFD3000A1F97 /* ManagedCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedCache.swift; sourceTree = "<group>"; };
@@ -667,6 +669,7 @@
 		4942E95229677D8800C11270 /* snapshots */ = {
 			isa = PBXGroup;
 			children = (
+				49279809296F58D90016DC0E /* LIST_WITH_ERROR_MESSAGE_light_extraExtraExtraLarge.png */,
 				4942E95729677E5100C11270 /* LIST_WITH_ERROR_MESSAGE_dark.png */,
 				4942E95829677E5100C11270 /* LIST_WITH_ERROR_MESSAGE_light.png */,
 				4942E95329677D9300C11270 /* EMPTY_LIST_dark.png */,
@@ -1183,6 +1186,7 @@
 			files = (
 				4942E95629677D9300C11270 /* EMPTY_LIST_light.png in Resources */,
 				491FBA87295093A30052C1C3 /* snapshots in Resources */,
+				4927980A296F58D90016DC0E /* LIST_WITH_ERROR_MESSAGE_light_extraExtraExtraLarge.png in Resources */,
 				4942E95529677D9300C11270 /* EMPTY_LIST_dark.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
