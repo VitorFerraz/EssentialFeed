@@ -22,7 +22,7 @@ public final class ErrorView: UIButton {
     }
     
     private func configure() {
-        backgroundColor = #colorLiteral(red: 0.7877714634, green: 0.4777009487, blue: 0.424454689, alpha: 1)
+        backgroundColor = #colorLiteral(red: 0.9991759658, green: 0.4186978042, blue: 0.4158208966, alpha: 1)
         hideMessage()
         addTarget(self, action: #selector(hideMessageAnimated), for: .touchUpInside)
     }
