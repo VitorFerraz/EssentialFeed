@@ -306,6 +306,18 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertNil(view?.renderedImage, "Expected no rendered image when an image load finishes after the view is not visible anymore")
     }
     
+    func test_tapsOnErrorView_hidesErrorMessage() {
+        let (sut, loader) = makeSUT()
+        sut.loadViewIfNeeded()
+        XCTAssertEqual(sut.errorMessage, nil)
+        
+        loader.completeFeedLoadingWithError()
+        XCTAssertEqual(sut.errorMessage, loadError)
+        
+        sut.simulateErrorViewTap()
+        XCTAssertEqual(sut.errorMessage, nil)
+    }
+    
     // MARK: - Helpers
     
     private func anyImageData() -> Data {
@@ -411,6 +423,14 @@ private extension UIRefreshControl {
 }
 
 extension ListViewController {
+    
+    func simulateErrorViewTap() {
+        errorView.simulateTap()
+    }
+    
+    var errorMessage: String? {
+        errorView.message
+    }
     func simulateUserInitiatedFeedReload() {
         refreshControl?.simulatePullToRefresh()
     }
