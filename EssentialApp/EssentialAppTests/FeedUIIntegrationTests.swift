@@ -424,6 +424,11 @@ private extension UIRefreshControl {
 
 extension ListViewController {
     
+    public override func loadViewIfNeeded() {
+        super.loadViewIfNeeded()
+        tableView.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
+    }
+    
     func simulateErrorViewTap() {
         errorView.simulateTap()
     }
@@ -440,6 +445,7 @@ extension ListViewController {
     }
     
     func numberOfRenderedFeedImageViews() -> Int {
+        tableView.numberOfSections == 0 ? 0 :
         tableView.numberOfRows(inSection: feedImagesSection)
     }
     
