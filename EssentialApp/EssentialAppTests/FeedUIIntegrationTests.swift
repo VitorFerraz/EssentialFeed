@@ -11,7 +11,7 @@ import EssentialFeediOS
 import EssentialApp
 import Combine
 
-final class FeedUIIntegrationTests: XCTestCase {
+class FeedUIIntegrationTests: XCTestCase {
     
     func test_loadFeedCompletion_dipatchesFromBackgroundToMainThread() {
         let (sut, loader) = makeSUT()
