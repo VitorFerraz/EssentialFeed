@@ -12,6 +12,14 @@ import EssentialApp
 import Combine
 
 class CommentsUIIntegrationTests: FeedUIIntegrationTests {
+    func test_commentViewView_hasTitle() {
+        let (sut, _) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        
+        XCTAssertEqual(sut.title, commentsTitle)
+    }
+    
     override func test_loadFeedCompletion_dipatchesFromBackgroundToMainThread() {
         let (sut, loader) = makeSUT()
         sut.loadViewIfNeeded()
@@ -37,14 +45,6 @@ class CommentsUIIntegrationTests: FeedUIIntegrationTests {
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)
-    }
-    
-    override func test_feedView_hasTitle() {
-        let (sut, _) = makeSUT()
-        
-        sut.loadViewIfNeeded()
-        
-        XCTAssertEqual(sut.title, feedTitle)
     }
     
     override func test_loadFeedActions_requestFeedFromLoader() {
@@ -148,7 +148,7 @@ class CommentsUIIntegrationTests: FeedUIIntegrationTests {
     
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: ListViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = CommentsUIComposer.feedComposedWith(commentsLoader: loader.loadPublisher)
+        let sut = CommentsUIComposer.commentsComposedWith(commentsLoader: loader.loadPublisher)
         trackForMemoryLeaks(loader, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, loader)

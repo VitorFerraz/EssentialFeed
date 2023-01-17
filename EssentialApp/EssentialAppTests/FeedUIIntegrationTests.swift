@@ -332,7 +332,7 @@ class FeedUIIntegrationTests: XCTestCase {
         return (sut, loader)
     }
     
-    private func assertThat(_ sut: ListViewController, isRendering feed: [FeedImage], file: StaticString = #file, line: UInt = #line) throws {
+    func assertThat(_ sut: ListViewController, isRendering feed: [FeedImage], file: StaticString = #file, line: UInt = #line) throws {
         sut.tableView.layoutIfNeeded()
         RunLoop.main.run(until: Date())
         guard sut.numberOfRenderedFeedImageViews() == feed.count else {
@@ -345,7 +345,7 @@ class FeedUIIntegrationTests: XCTestCase {
         }
     }
     
-    private func assertThat(_ sut: ListViewController, hasViewConfiguredFor feed: FeedImage, at index: Int, file: StaticString = #file, line: UInt = #line) throws {
+    func assertThat(_ sut: ListViewController, hasViewConfiguredFor feed: FeedImage, at index: Int, file: StaticString = #file, line: UInt = #line) throws {
         let view = try XCTUnwrap(sut.feedImageView(at: index) as? FeedImageCell)
         XCTAssertEqual(view.isShowingLocation, feed.location != nil, file: file, line: line)
         XCTAssertEqual(view.locationText, feed.location, file: file, line: line)
