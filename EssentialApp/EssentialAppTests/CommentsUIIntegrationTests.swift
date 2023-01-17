@@ -34,32 +34,33 @@ class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         XCTAssertEqual(loader.loadCommentsCallCount, 3, "Expected yet another loading request once user initiates another reload")
     }
     
-    override func test_loadFeedCompletion_dipatchesFromBackgroundToMainThread() {
-        let (sut, loader) = makeSUT()
-        sut.loadViewIfNeeded()
-        let exp = expectation(description: "wait for completion")
-        DispatchQueue.global().async {
-            loader.completeFeedLoading(at: 0)
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1)
-    }
-    
-    override func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
+    func test_loadingCommentsIndicator_isVisibleWhileLoadingComments() {
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once view is loaded")
         
-        loader.completeFeedLoading(at: 0)
+        loader.completeCommentsLoading(at: 0)
         XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once loading completes successfully")
         
         sut.simulateUserInitiatedReload()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once user initiates a reload")
         
-        loader.completeFeedLoadingWithError(at: 1)
+        loader.completeCommentsLoadingWithError(at: 1)
         XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once user initiated loading  completed with error")
+    }
+    
+    
+    override func test_loadFeedCompletion_dipatchesFromBackgroundToMainThread() {
+        let (sut, loader) = makeSUT()
+        sut.loadViewIfNeeded()
+        let exp = expectation(description: "wait for completion")
+        DispatchQueue.global().async {
+            loader.completeCommentsLoading(at: 0)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
     }
     
     override func test_loadFeedCompletion_rendersSuccessfullyLoadedFeed() throws {
@@ -73,12 +74,12 @@ class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         sut.loadViewIfNeeded()
         try assertThat(sut, isRendering: [])
         
-        loader.completeFeedLoading(with: [image0], at: 0)
+        loader.completeCommentsLoading(with: [image0], at: 0)
         try assertThat(sut, isRendering: [image0])
         
         
         sut.simulateUserInitiatedReload()
-        loader.completeFeedLoading(with: [image0, image1, image2, image3], at: 1)
+        loader.completeCommentsLoading(with: [image0, image1, image2, image3], at: 1)
         try assertThat(sut, isRendering: [image0, image1, image2, image3])
     }
     
@@ -90,12 +91,12 @@ class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         
         sut.loadViewIfNeeded()
         
-        loader.completeFeedLoading(with: [image0, image1], at: 0)
+        loader.completeCommentsLoading(with: [image0, image1], at: 0)
         try assertThat(sut, isRendering: [image0, image1])
         
         
         sut.simulateUserInitiatedReload()
-        loader.completeFeedLoading(with: [], at: 1)
+        loader.completeCommentsLoading(with: [], at: 1)
         try assertThat(sut, isRendering: [])
     }
     
@@ -105,11 +106,11 @@ class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         
         sut.loadViewIfNeeded()
         
-        loader.completeFeedLoading(with: [image0], at: 0)
+        loader.completeCommentsLoading(with: [image0], at: 0)
         try assertThat(sut, isRendering: [image0])
         
         sut.simulateUserInitiatedReload()
-        loader.completeFeedLoadingWithError(at: 1)
+        loader.completeCommentsLoadingWithError(at: 1)
         try assertThat(sut, isRendering: [image0])
     }
     
@@ -118,7 +119,7 @@ class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         sut.loadViewIfNeeded()
         XCTAssertEqual(sut.errorMessage, nil)
         
-        loader.completeFeedLoadingWithError()
+        loader.completeCommentsLoadingWithError()
         XCTAssertEqual(sut.errorMessage, loadError)
         
         sut.simulateErrorViewTap()
@@ -157,11 +158,11 @@ class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         }
         
         
-        func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = 0) {
+        func completeCommentsLoading(with feed: [FeedImage] = [], at index: Int = 0) {
             requests[index].send(feed)
         }
         
-        func completeFeedLoadingWithError(at index: Int = 0) {
+        func completeCommentsLoadingWithError(at index: Int = 0) {
             let error = NSError(domain: "an error", code: 0)
             requests[index].send(completion: .failure(error))
         }
