@@ -5,8 +5,8 @@
 //  Created by Vitor Ferraz Varela on 15/11/22.
 //
 
-import Foundation
 import EssentialFeed
+import Foundation
 
 var anyURL: URL {
     URL(string: "http://any-url.com")!
@@ -19,7 +19,6 @@ func anyData() -> Data {
 var anyNSError: NSError {
     NSError(domain: "any error", code: 0)
 }
-
 
 func uniqueFeed() -> [FeedImage] {
     [FeedImage(id: UUID(), description: "any", location: "any", url: URL(string: "http://any-url.com")!)]
@@ -43,7 +42,7 @@ func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
 }
 
 class DummyView: ResourceView {
-    func display(_ viewModel: Any) {}
+    func display(_: Any) {}
 }
 
 var loadError: String {

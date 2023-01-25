@@ -5,20 +5,20 @@
 //  Created by Vitor Ferraz Varela on 17/01/23.
 //
 
-import UIKit
-import EssentialFeediOS
-import EssentialFeed
 import Combine
+import EssentialFeed
+import EssentialFeediOS
+import UIKit
 
 public final class CommentsUIComposer {
     private typealias CommentPresentationAdapter = LoadResourcePresentationAdapter<[ImageComment], CommentsViewAdapter>
     private init() {}
-    
+
     public static func commentsComposedWith(
         commentsLoader: @escaping () -> AnyPublisher<[ImageComment], Error>
     ) -> ListViewController {
         let presentationAdapter = CommentPresentationAdapter(loader: { commentsLoader().dispatchOnMainQueue() })
-        
+
         let commentsViewController = makeCommentsViewController(title: ImageCommentsPresenter.title)
         commentsViewController.onRefresh = presentationAdapter.loadResource
 
@@ -32,7 +32,7 @@ public final class CommentsUIComposer {
                 ImageCommentsPresenter.map($0)
             }
         )
-        
+
         return commentsViewController
     }
 
@@ -47,13 +47,12 @@ public final class CommentsUIComposer {
 
 final class CommentsViewAdapter: ResourceView {
     private weak var controller: ListViewController?
-    
+
     init(controller: ListViewController) {
         self.controller = controller
     }
-    
+
     func display(_ viewModel: ImageCommentsViewModel) {
-        
         controller?.display(viewModel.comments.map { viewModel in
             CellController(id: viewModel, ImageCommentCellController(model: viewModel))
         })

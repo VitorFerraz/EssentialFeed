@@ -5,14 +5,14 @@
 //  Created by Vitor Ferraz Varela on 16/09/22.
 //
 
-import Foundation
 import EssentialFeed
+import Foundation
 
 extension Date {
-    func minusFeedCacheMaxAge() -> Date  {
+    func minusFeedCacheMaxAge() -> Date {
         adding(days: -feedCacheMaxAgeInDays)
     }
-     
+
     private var feedCacheMaxAgeInDays: Int {
         7
     }

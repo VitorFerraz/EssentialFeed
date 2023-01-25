@@ -15,7 +15,7 @@ public struct ImageCommentViewModel: Hashable {
     public let message: String
     public let date: String
     public let username: String
-    
+
     public init(message: String, date: String, username: String) {
         self.message = message
         self.date = date
@@ -26,11 +26,11 @@ public struct ImageCommentViewModel: Hashable {
 public final class ImageCommentsPresenter {
     public static var title: String {
         return NSLocalizedString("FEED_VIEW_TITLE",
-            tableName: "Feed",
-            bundle: Bundle(for: ImageCommentsPresenter.self),
-            comment: "Title for the feed view")
+                                 tableName: "Feed",
+                                 bundle: Bundle(for: ImageCommentsPresenter.self),
+                                 comment: "Title for the feed view")
     }
-    
+
     public static func map(_ comments: [ImageComment], calendar: Calendar = .current, locale: Locale = .current) -> ImageCommentsViewModel {
         ImageCommentsViewModel(comments: comments.map { comment in
             let formatter = RelativeDateTimeFormatter()

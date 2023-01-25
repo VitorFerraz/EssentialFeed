@@ -5,8 +5,8 @@
 //  Created by Vitor Ferraz Varela on 06/11/22.
 //
 
-import Foundation
 import EssentialFeed
+import Foundation
 
 class FeedImageDataStoreSpy: FeedImageDataStore {
     enum Message: Equatable {

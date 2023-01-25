@@ -5,20 +5,20 @@
 //  Created by Vitor Ferraz Varela on 06/11/22.
 //
 
-import UIKit
-import EssentialFeed
-import EssentialFeediOS
-import EssentialFeedAPI
-import CoreData
 import Combine
+import CoreData
+import EssentialFeed
+import EssentialFeedAPI
+import EssentialFeediOS
+import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    
+
     private lazy var httpClient: HTTPClient = {
         URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
     }()
-    
+
     private lazy var store: FeedStore & FeedImageDataStore = {
         try! CoreDataFeedStore(
             storeURL: NSPersistentContainer
@@ -29,61 +29,62 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private lazy var localFeedLoader: LocalFeedLoader = {
         LocalFeedLoader(store: store, currentDate: Date.init)
     }()
-    
+
     private lazy var baseURL = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed")!
 
     private lazy var navigationController = UINavigationController(
         rootViewController: FeedUIComposer.feedComposedWith(
             feedLoader: makeRemoteFeedLoaderWithLocalFallback,
-            imageLoader: makeLocalImageLoaderWithRemoteFallback))
+            imageLoader: makeLocalImageLoaderWithRemoteFallback
+        ))
 
     convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
         self.init()
         self.httpClient = httpClient
         self.store = store
     }
-    
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+
+    func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
         guard let scene = (scene as? UIWindowScene) else { return }
-    
+
         window = UIWindow(windowScene: scene)
         configureWindow()
     }
-    
+
     func configureWindow() {
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
-    
-    func sceneWillResignActive(_ scene: UIScene) {
+
+    func sceneWillResignActive(_: UIScene) {
         localFeedLoader.validateCache { _ in }
     }
-    
+
     private func showComments(for image: FeedImage) {
         let url = ImageCommentsEndpoint.get(image.id).url(baseURL: baseURL)
         let comments = CommentsUIComposer.commentsComposedWith(commentsLoader: makeRemoteCommentsLoader(url: url))
         navigationController.pushViewController(comments, animated: true)
     }
-    
+
     private func makeRemoteCommentsLoader(url: URL) -> () -> AnyPublisher<[ImageComment], Error> {
         return { [httpClient] in
-            return httpClient
+            httpClient
                 .getPublisher(url: url)
                 .tryMap(ImageCommentsMapper.map)
                 .eraseToAnyPublisher()
         }
     }
-    
+
     private func makeRemoteFeedLoaderWithLocalFallback() -> AnyPublisher<[FeedImage], Error> {
         let url = FeedEndpoint.get.url(baseURL: baseURL)
-        
+
         return httpClient
             .getPublisher(url: url)
             .tryMap(FeedItemsMapper.map)
             .caching(to: localFeedLoader)
             .fallback(to: localFeedLoader.loadPublisher)
     }
-    
+
     private func makeLocalImageLoaderWithRemoteFallback(url: URL) -> FeedImageDataLoader.Publisher {
         let localImageLoader = LocalFeedImageDataLoader(store: store)
 
@@ -100,7 +101,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 public enum FeedEndpoint {
     case get
-    
+
     public func url(baseURL: URL) -> URL {
         switch self {
         case .get:
@@ -111,7 +112,7 @@ public enum FeedEndpoint {
 
 public enum ImageCommentsEndpoint {
     case get(UUID)
-    
+
     public func url(baseURL: URL) -> URL {
         switch self {
         case let .get(id):
@@ -122,10 +123,10 @@ public enum ImageCommentsEndpoint {
 
 public extension HTTPClient {
     typealias Publisher = AnyPublisher<(Data, HTTPURLResponse), Error>
-    
+
     func getPublisher(url: URL) -> Publisher {
         var task: HTTPClientTask?
-        
+
         return Deferred {
             Future { completion in
                 task = self.get(from: url, completion: completion)
@@ -138,10 +139,10 @@ public extension HTTPClient {
 
 public extension FeedImageDataLoader {
     typealias Publisher = AnyPublisher<Data, Error>
-    
+
     func loadImageDataPublisher(from url: URL) -> Publisher {
         var task: FeedImageDataLoaderTask?
-        
+
         return Deferred {
             Future { completion in
                 task = self.loadImageData(from: url, completion: completion)
@@ -165,11 +166,10 @@ private extension FeedImageCache {
     }
 }
 
-
 extension Publisher where Output == [FeedImage] {
     func caching(to cache: FeedCache) -> AnyPublisher<Output, Failure> {
         handleEvents(receiveOutput: cache.saveIgnoringResult)
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
 }
 
@@ -207,30 +207,30 @@ extension DispatchQueue {
     static var immediateWhenOnMainQueueScheduler: ImmediateWhenOnMainQueueScheduler {
         ImmediateWhenOnMainQueueScheduler()
     }
+
     struct ImmediateWhenOnMainQueueScheduler: Scheduler {
         typealias SchedulerTimeType = DispatchQueue.SchedulerTimeType
         typealias SchedulerOptions = DispatchQueue.SchedulerOptions
-        
+
         var now: DispatchQueue.SchedulerTimeType {
             DispatchQueue.main.now
         }
-        
+
         var minimumTolerance: DispatchQueue.SchedulerTimeType.Stride {
             DispatchQueue.main.minimumTolerance
         }
-        
+
         func schedule(options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) {
             guard Thread.isMainThread else {
                 return DispatchQueue.main.schedule(options: options, action)
-                
             }
             action()
         }
-        
+
         func schedule(after date: DispatchQueue.SchedulerTimeType, tolerance: DispatchQueue.SchedulerTimeType.Stride, options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) {
             DispatchQueue.main.schedule(after: date, tolerance: tolerance, options: options, action)
         }
-        
+
         func schedule(after date: DispatchQueue.SchedulerTimeType, interval: DispatchQueue.SchedulerTimeType.Stride, tolerance: DispatchQueue.SchedulerTimeType.Stride, options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) -> Cancellable {
             DispatchQueue.main.schedule(after: date, interval: interval, tolerance: tolerance, options: options, action)
         }
@@ -265,11 +265,11 @@ struct AnyScheduler<SchedulerTimeType: Strideable, SchedulerOptions>: Scheduler 
         _scheduleAfter = scheduler.schedule(after:tolerance:options:_:)
         _scheduleAfterInterval = scheduler.schedule(after:interval:tolerance:options:_:)
     }
-    
+
     var now: SchedulerTimeType { _now() }
-    
+
     var minimumTolerance: SchedulerTimeType.Stride { _minimumTolerance() }
-    
+
     func schedule(options: SchedulerOptions?, _ action: @escaping () -> Void) {
         _schedule(options, action)
     }

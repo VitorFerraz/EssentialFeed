@@ -18,7 +18,6 @@ class ManagedFeedImage: NSManagedObject {
 }
 
 extension ManagedFeedImage {
-    
     static func first(with url: URL, in context: NSManagedObjectContext) throws -> ManagedFeedImage? {
         let request = NSFetchRequest<ManagedFeedImage>(entityName: entity().name!)
         request.predicate = NSPredicate(format: "%K = %@", argumentArray: [#keyPath(ManagedFeedImage.url), url])
@@ -26,7 +25,7 @@ extension ManagedFeedImage {
         request.fetchLimit = 1
         return try context.fetch(request).first
     }
-    
+
     static func images(from localFeed: [LocalFeedImage], in context: NSManagedObjectContext) -> NSOrderedSet {
         NSOrderedSet(array: localFeed.map { local in
             let managed = ManagedFeedImage(context: context)
@@ -37,7 +36,7 @@ extension ManagedFeedImage {
             return managed
         })
     }
-    
+
     var local: LocalFeedImage {
         LocalFeedImage(id: id, description: imageDescription, location: location, url: url)
     }

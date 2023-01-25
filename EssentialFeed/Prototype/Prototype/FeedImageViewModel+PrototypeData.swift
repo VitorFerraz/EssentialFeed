@@ -39,7 +39,7 @@ extension FeedImageViewModel {
                 description: "Glorious day in Brighton!! 🎢",
                 location: "Brighton Seafront",
                 imageName: "image-5"
-            )
+            ),
         ]
     }
 }

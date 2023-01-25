@@ -8,7 +8,6 @@
 import CoreData
 
 extension CoreDataFeedStore: FeedStore {
-
     public func retrieve(completion: @escaping RetrievalCompletion) {
         perform { context in
             completion(Result {
@@ -37,5 +36,4 @@ extension CoreDataFeedStore: FeedStore {
             })
         }
     }
-
 }

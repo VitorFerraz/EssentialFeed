@@ -28,16 +28,16 @@ public final class LoadResourcePresenter<Resource, View: ResourceView> {
 
     public static var loadError: String {
         return NSLocalizedString("GENERIC_CONNECTION_ERROR",
-             tableName: "Shared",
-             bundle: Bundle(for: Self.self),
-             comment: "Error message displayed when we can't load the resource from the server")
+                                 tableName: "Shared",
+                                 bundle: Bundle(for: Self.self),
+                                 comment: "Error message displayed when we can't load the resource from the server")
     }
 
     public func didStartLoading() {
         errorView.display(.noError)
         loadingView.display(ResourceLoadingViewModel(isLoading: true))
     }
-    
+
     public func didFinishLoading(with resource: Resource) {
         do {
             let viewModel = try mapper(resource)
@@ -46,10 +46,9 @@ public final class LoadResourcePresenter<Resource, View: ResourceView> {
         } catch {
             didFinishLoading(with: error)
         }
-        
     }
-    
-    public func didFinishLoading(with error: Error) {
+
+    public func didFinishLoading(with _: Error) {
         errorView.display(.error(message: Self.loadError))
         loadingView.display(ResourceLoadingViewModel(isLoading: false))
     }

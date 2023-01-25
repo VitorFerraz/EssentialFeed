@@ -5,8 +5,8 @@
 //  Created by Vitor Ferraz Varela on 06/11/22.
 //
 
-import Foundation
 import EssentialFeed
+import Foundation
 
 public final class RemoteFeedImageDataLoader: FeedImageDataLoader {
     private let client: HTTPClient
@@ -50,7 +50,7 @@ public final class RemoteFeedImageDataLoader: FeedImageDataLoader {
 
             task.complete(with: result
                 .mapError { _ in Error.connectivity }
-                .flatMap { (data, response) in
+                .flatMap { data, response in
                     let isValidResponse = response.isOK && !data.isEmpty
                     return isValidResponse ? .success(data) : .failure(Error.invalidData)
                 })

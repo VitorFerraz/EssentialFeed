@@ -11,11 +11,9 @@ var anyNSError: NSError {
     NSError(domain: "", code: 1)
 }
 
-
 var anyURL: URL {
     URL(string: "http://any-url.com")!
 }
-
 
 var anyData: Data {
     Data("any data".utf8)
@@ -36,7 +34,7 @@ extension Date {
     func adding(seconds: TimeInterval) -> Date {
         self + seconds
     }
-    
+
     func adding(days: Int, calendar: Calendar = Calendar(identifier: .gregorian)) -> Date {
         calendar.date(byAdding: .day, value: days, to: self)!
     }

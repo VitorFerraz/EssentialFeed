@@ -5,25 +5,25 @@
 //  Created by Vitor Ferraz Varela on 05/11/22.
 //
 
+import EssentialFeed
 import Foundation
 import XCTest
-import EssentialFeed
 
 final class FeedPresenterTests: XCTestCase {
-    
     func test_title_isLocalized() {
         XCTAssertEqual(FeedPresenter.title, localized("FEED_VIEW_TITLE"))
     }
-    
+
     func test_map_createsViewModel() {
         let feed = uniqueImageFeed().models
-        
+
         let viewModel = FeedPresenter.map(feed)
-        
+
         XCTAssertEqual(viewModel.feed, feed)
     }
-    
+
     // MARK: - Helpers
+
     func localized(_ key: String, file: StaticString = #file, line: UInt = #line) -> String {
         let table = "Feed"
         let bundle = Bundle(for: FeedPresenter.self)
@@ -31,8 +31,7 @@ final class FeedPresenterTests: XCTestCase {
         if value == key {
             XCTFail("Missing localized string for key: \(key) in  table: \(table)", file: file, line: line)
         }
-        
+
         return value
     }
 }
-

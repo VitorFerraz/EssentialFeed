@@ -5,13 +5,13 @@
 //  Created by Vitor Ferraz Varela on 11/08/22.
 //
 
-import Foundation
 import EssentialFeed
+import Foundation
 
-public struct FeedItemsMapper {
+public enum FeedItemsMapper {
     private struct Root: Codable {
         private let items: [RemoteFeedItem]
-        
+
         var images: [FeedImage] {
             items.map {
                 FeedImage(
@@ -22,7 +22,7 @@ public struct FeedItemsMapper {
                 )
             }
         }
-        
+
         private struct RemoteFeedItem: Equatable, Codable {
             let id: UUID
             let description: String?
@@ -30,14 +30,14 @@ public struct FeedItemsMapper {
             let image: URL
         }
     }
-    
+
     private static var OK_200: Int { 200 }
-    
+
     public enum Error: Swift.Error {
         case connectivity
         case invalidData
     }
-    
+
     public static func map(_ data: Data, from response: HTTPURLResponse) throws -> [FeedImage] {
         guard response.isOK, let root = try? JSONDecoder().decode(Root.self, from: data) else {
             throw Self.Error.invalidData

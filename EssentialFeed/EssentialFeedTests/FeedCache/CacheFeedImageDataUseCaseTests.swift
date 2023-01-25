@@ -5,11 +5,10 @@
 //  Created by Vitor Ferraz Varela on 06/11/22.
 //
 
-import XCTest
 import EssentialFeed
+import XCTest
 
 class CacheFeedImageDataUseCaseTests: XCTestCase {
-
     func test_init_doesNotMessageStoreUponCreation() {
         let (_, store) = makeSUT()
 
@@ -57,7 +56,7 @@ class CacheFeedImageDataUseCaseTests: XCTestCase {
     }
 
     // MARK: - Helpers
-    
+
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: FeedImageDataStoreSpy) {
         let store = FeedImageDataStoreSpy()
         let sut = LocalFeedImageDataLoader(store: store)
@@ -78,8 +77,8 @@ class CacheFeedImageDataUseCaseTests: XCTestCase {
             case (.success, .success):
                 break
 
-            case (.failure(let receivedError as LocalFeedImageDataLoader.SaveError),
-                  .failure(let expectedError as LocalFeedImageDataLoader.SaveError)):
+            case let (.failure(receivedError as LocalFeedImageDataLoader.SaveError),
+                      .failure(expectedError as LocalFeedImageDataLoader.SaveError)):
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
 
             default:
@@ -92,5 +91,4 @@ class CacheFeedImageDataUseCaseTests: XCTestCase {
         action()
         wait(for: [exp], timeout: 1.0)
     }
-
 }

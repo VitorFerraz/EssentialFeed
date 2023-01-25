@@ -5,11 +5,10 @@
 //  Created by Vitor Ferraz Varela on 06/11/22.
 //
 
-import XCTest
 import EssentialFeed
+import XCTest
 
 class CoreDataFeedImageDataStoreTests: XCTestCase {
-
     func test_retrieveImageData_deliversNotFoundWhenEmpty() {
         let sut = makeSUT()
 
@@ -58,7 +57,7 @@ class CoreDataFeedImageDataStoreTests: XCTestCase {
         }
 
         let op2 = expectation(description: "Operation 2")
-        sut.insert(anyData, for: url) { _ in    op2.fulfill() }
+        sut.insert(anyData, for: url) { _ in op2.fulfill() }
 
         let op3 = expectation(description: "Operation 3")
         sut.insert(anyData, for: url) { _ in op3.fulfill() }
@@ -67,7 +66,7 @@ class CoreDataFeedImageDataStoreTests: XCTestCase {
     }
 
     // - MARK: Helpers
-    
+
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> CoreDataFeedStore {
         let storeURL = URL(fileURLWithPath: "/dev/null")
         let sut = try! CoreDataFeedStore(storeURL: storeURL)
@@ -87,11 +86,11 @@ class CoreDataFeedImageDataStoreTests: XCTestCase {
         return LocalFeedImage(id: UUID(), description: "any", location: "any", url: url)
     }
 
-    private func expect(_ sut: CoreDataFeedStore, toCompleteRetrievalWith expectedResult: FeedImageDataStore.RetrievalResult, for url: URL,  file: StaticString = #file, line: UInt = #line) {
+    private func expect(_ sut: CoreDataFeedStore, toCompleteRetrievalWith expectedResult: FeedImageDataStore.RetrievalResult, for url: URL, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for load completion")
         sut.retrieve(dataForURL: url) { receivedResult in
             switch (receivedResult, expectedResult) {
-            case let (.success( receivedData), .success(expectedData)):
+            case let (.success(receivedData), .success(expectedData)):
                 XCTAssertEqual(receivedData, expectedData, file: file, line: line)
 
             default:
@@ -122,5 +121,4 @@ class CoreDataFeedImageDataStoreTests: XCTestCase {
         }
         wait(for: [exp], timeout: 1.0)
     }
-
 }

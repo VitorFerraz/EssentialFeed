@@ -5,32 +5,34 @@
 //  Created by Vitor Ferraz Varela on 19/10/22.
 //
 
-import UIKit
-import EssentialFeediOS
-import EssentialFeed
 import Combine
+import EssentialFeed
+import EssentialFeediOS
+import UIKit
 
 public final class FeedUIComposer {
     private typealias FeedPresentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>
     private init() {}
-    
+
     public static func feedComposedWith(
         feedLoader: @escaping () -> AnyPublisher<[FeedImage], Error>,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher
     ) -> ListViewController {
         let presentationAdapter = FeedPresentationAdapter(loader: { feedLoader().dispatchOnMainQueue() })
-        
+
         let feedController = makeFeedViewController(title: FeedPresenter.title)
         feedController.onRefresh = presentationAdapter.loadResource
 
         presentationAdapter.presenter = LoadResourcePresenter(
             resourceView: FeedViewAdapter(
                 controller: feedController,
-                imageLoader: imageLoader),
+                imageLoader: imageLoader
+            ),
             loadingView: WeakRefVirtualProxy(feedController),
             errorView: WeakRefVirtualProxy(feedController),
-            mapper: FeedPresenter.map)
-        
+            mapper: FeedPresenter.map
+        )
+
         return feedController
     }
 
@@ -55,7 +57,7 @@ private extension ListViewController {
 
 final class WeakRefVirtualProxy<T: AnyObject> {
     private weak var object: T?
-    
+
     init(_ object: T) {
         self.object = object
     }
@@ -82,26 +84,27 @@ extension WeakRefVirtualProxy: ResourceView where T: ResourceView, T.ResourceVie
 final class FeedViewAdapter: ResourceView {
     private weak var controller: ListViewController?
     private let imageLoader: (URL) -> FeedImageDataLoader.Publisher
-    
+
     init(controller: ListViewController, imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher) {
         self.controller = controller
         self.imageLoader = imageLoader
     }
-    
+
     func display(_ viewModel: FeedViewModel) {
         controller?.display(viewModel.feed.map {
             model in
-                let adapter = LoadResourcePresentationAdapter<Data ,WeakRefVirtualProxy<FeedImageCellController>>(loader: { [imageLoader] in
-                    imageLoader(model.url)
-                })
+            let adapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>(loader: { [imageLoader] in
+                imageLoader(model.url)
+            })
             let view = FeedImageCellController(viewModel: FeedImagePresenter.map(model), delegate: adapter)
-            
+
             adapter.presenter = LoadResourcePresenter(
                 resourceView: WeakRefVirtualProxy(view),
                 loadingView: WeakRefVirtualProxy(view),
                 errorView: WeakRefVirtualProxy(view),
-                mapper: UIImage.tryMake)
-            
+                mapper: UIImage.tryMake
+            )
+
             return CellController(id: model, view)
         })
     }
@@ -109,7 +112,7 @@ final class FeedViewAdapter: ResourceView {
 
 extension UIImage {
     struct InvalidImageData: Error {}
-    
+
     static func tryMake(data: Data) throws -> UIImage {
         guard let image = UIImage(data: data) else {
             throw InvalidImageData()
@@ -121,17 +124,17 @@ extension UIImage {
 final class LoadResourcePresentationAdapter<Resource, View: ResourceView> {
     private let loader: () -> AnyPublisher<Resource, Error>
     var presenter: LoadResourcePresenter<Resource, View>?
-    var cancellable:   AnyCancellable?
-    
+    var cancellable: AnyCancellable?
+
     init(loader: @escaping () -> AnyPublisher<Resource, Error>) {
         self.loader = loader
     }
-    
+
     func loadResource() {
         presenter?.didStartLoading()
         cancellable = loader().sink { [weak self] completion in
             switch completion {
-            case .failure(let error):
+            case let .failure(error):
                 self?.presenter?.didFinishLoading(with: error)
             case .finished: break
             }
@@ -139,7 +142,7 @@ final class LoadResourcePresentationAdapter<Resource, View: ResourceView> {
             self?.presenter?.didFinishLoading(with: feed)
         }
     }
-    
+
     deinit {
         cancellable = nil
     }
@@ -149,6 +152,7 @@ extension LoadResourcePresentationAdapter: FeedImageCellControllerDelegate {
     func didRequestImage() {
         loadResource()
     }
+
     func didCancelImageRequest() {
         cancellable?.cancel()
         cancellable = nil

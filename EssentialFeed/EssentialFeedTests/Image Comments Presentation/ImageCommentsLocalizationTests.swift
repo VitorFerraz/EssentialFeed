@@ -5,8 +5,8 @@
 //  Created by Vitor Ferraz Varela on 04/01/23.
 //
 
-import XCTest
 import EssentialFeed
+import XCTest
 
 class ImageCommentsLocalizationTests: XCTestCase {
     func test_localizedStrings_haveKeysAndValuesForAllSupportedLocalizations() {
@@ -14,5 +14,4 @@ class ImageCommentsLocalizationTests: XCTestCase {
         let bundle = Bundle(for: ImageCommentsPresenter.self)
         assertLocalizaedKeyAndValuesExists(in: bundle, table)
     }
-
 }

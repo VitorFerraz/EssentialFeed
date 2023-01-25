@@ -5,11 +5,10 @@
 //  Created by Vitor Ferraz Varela on 06/11/22.
 //
 
-import XCTest
 import EssentialFeed
+import XCTest
 
 class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
-
     func test_init_doesNotMessageStoreUponCreation() {
         let (_, store) = makeSUT()
 
@@ -80,8 +79,8 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     }
 
     // MARK: - Helpers
-    
-    private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: FeedImageDataStoreSpy) {
+
+    private func makeSUT(currentDate _: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: FeedImageDataStoreSpy) {
         let store = FeedImageDataStoreSpy()
         let sut = LocalFeedImageDataLoader(store: store)
         trackForMemoryLeaks(store, file: file, line: line)
@@ -109,8 +108,8 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
             case let (.success(receivedData), .success(expectedData)):
                 XCTAssertEqual(receivedData, expectedData, file: file, line: line)
 
-            case (.failure(let receivedError as LocalFeedImageDataLoader.LoadError),
-                  .failure(let expectedError as LocalFeedImageDataLoader.LoadError)):
+            case let (.failure(receivedError as LocalFeedImageDataLoader.LoadError),
+                      .failure(expectedError as LocalFeedImageDataLoader.LoadError)):
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
 
             default:
@@ -123,5 +122,4 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
         action()
         wait(for: [exp], timeout: 1.0)
     }
-
 }

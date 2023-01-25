@@ -5,7 +5,6 @@
 //  Created by Vitor Ferraz Varela on 05/11/22.
 //
 
-
 import UIKit
 
 extension UIRefreshControl {
