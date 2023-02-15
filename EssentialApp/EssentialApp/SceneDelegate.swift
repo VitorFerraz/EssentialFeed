@@ -110,17 +110,6 @@ public enum FeedEndpoint {
     }
 }
 
-public enum ImageCommentsEndpoint {
-    case get(UUID)
-
-    public func url(baseURL: URL) -> URL {
-        switch self {
-        case let .get(id):
-            return baseURL.appendingPathComponent("/v1/image/\(id)/comments")
-        }
-    }
-}
-
 public extension HTTPClient {
     typealias Publisher = AnyPublisher<(Data, HTTPURLResponse), Error>
 
