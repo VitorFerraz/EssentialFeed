@@ -9,17 +9,18 @@ import Combine
 import EssentialFeed
 import EssentialFeediOS
 import UIKit
+import EssentialFeedAPI
 
 public final class FeedUIComposer {
-    private typealias FeedPresentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>
+    private typealias FeedPresentationAdapter = LoadResourcePresentationAdapter<Paginated<FeedImage>, FeedViewAdapter>
     private init() {}
 
     public static func feedComposedWith(
-        feedLoader: @escaping () -> AnyPublisher<[FeedImage], Error>,
+        feedLoader: @escaping () -> AnyPublisher<Paginated<FeedImage>, Error>,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher,
         selection: @escaping ((FeedImage) -> Void) = { _ in }
     ) -> ListViewController {
-        let presentationAdapter = FeedPresentationAdapter(loader: { feedLoader().dispatchOnMainQueue() })
+        let presentationAdapter = FeedPresentationAdapter(loader: feedLoader)
 
         let feedController = makeFeedViewController(title: FeedPresenter.title)
         feedController.onRefresh = presentationAdapter.loadResource
@@ -32,7 +33,7 @@ public final class FeedUIComposer {
             ),
             loadingView: WeakRefVirtualProxy(feedController),
             errorView: WeakRefVirtualProxy(feedController),
-            mapper: FeedPresenter.map
+            mapper:  { $0 }
         )
 
         return feedController
@@ -94,8 +95,8 @@ final class FeedViewAdapter: ResourceView {
         self.selection = selection
     }
 
-    func display(_ viewModel: FeedViewModel) {
-        controller?.display(viewModel.feed.map {
+    func display(_ viewModel: Paginated<FeedImage>) {
+        controller?.display(viewModel.items.map {
             model in
             let adapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>(loader: { [imageLoader] in
                 imageLoader(model.url)
@@ -138,7 +139,9 @@ final class LoadResourcePresentationAdapter<Resource, View: ResourceView> {
 
     func loadResource() {
         presenter?.didStartLoading()
-        cancellable = loader().sink { [weak self] completion in
+        cancellable = loader()
+            .dispatchOnMainQueue()
+            .sink { [weak self] completion in
             switch completion {
             case let .failure(error):
                 self?.presenter?.didFinishLoading(with: error)

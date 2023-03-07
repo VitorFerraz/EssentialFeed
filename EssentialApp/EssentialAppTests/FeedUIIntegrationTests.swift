@@ -10,6 +10,7 @@ import EssentialApp
 import EssentialFeed
 import EssentialFeediOS
 import XCTest
+import EssentialFeedAPI
 
 class FeedUIIntegrationTests: XCTestCase {
     
@@ -403,20 +404,20 @@ class FeedUIIntegrationTests: XCTestCase {
 
         // MARK: - FeedLoader
 
-        var feedRequests = [PassthroughSubject<[FeedImage], Error>]()
+        var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
 
+        func loadPublisher() -> AnyPublisher<Paginated<FeedImage>, Error> {
+            let publisher = PassthroughSubject<Paginated<FeedImage>, Error>()
+            feedRequests.append(publisher)
+            return publisher.eraseToAnyPublisher()
+        }
+        
         func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = 0) {
-            feedRequests[index].send(feed)
+            feedRequests[index].send(Paginated(items: feed))
         }
 
         func completeFeedLoadingWithError(at index: Int = 0) {
             feedRequests[index].send(completion: .failure(NSError(domain: "", code: -1)))
-        }
-
-        func loadPublisher() -> AnyPublisher<[FeedImage], Error> {
-            let publisher = PassthroughSubject<[FeedImage], Error>()
-            feedRequests.append(publisher)
-            return publisher.eraseToAnyPublisher()
         }
 
         // MARK: - FeedImageDataLoader
