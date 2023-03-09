@@ -81,6 +81,17 @@ class FeedUIIntegrationTests: XCTestCase {
         sut.simulateUserInitiatedReload()
         XCTAssertEqual(loader.loadFeedCallCount, 3, "Expected yet another loading request once user initiates another reload")
     }
+    
+    func test_loadMoreActions_requestMoreFromLoader() {
+        let (sut, loader) = makeSUT()
+         sut.loadViewIfNeeded()
+         loader.completeFeedLoading()
+
+         XCTAssertEqual(loader.loadMoreCallCount, 0, "Expected no requests before until load more action")
+
+         sut.simulateLoadMoreFeedAction()
+         XCTAssertEqual(loader.loadMoreCallCount, 1, "Expected load more request")
+    }
 
     func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
         let (sut, loader) = makeSUT()
@@ -401,6 +412,8 @@ class FeedUIIntegrationTests: XCTestCase {
         var loadFeedCallCount: Int {
             feedRequests.count
         }
+        
+        private (set) var loadMoreCallCount: Int = 0
 
         // MARK: - FeedLoader
 
@@ -413,12 +426,16 @@ class FeedUIIntegrationTests: XCTestCase {
         }
         
         func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = 0) {
-            feedRequests[index].send(Paginated(items: feed))
+            feedRequests[index].send(Paginated(items: feed, loadMore: { [weak self] _ in
+                self?.loadMoreCallCount += 1
+            }))
         }
 
         func completeFeedLoadingWithError(at index: Int = 0) {
             feedRequests[index].send(completion: .failure(NSError(domain: "", code: -1)))
         }
+        
+        
 
         // MARK: - FeedImageDataLoader
 
@@ -479,6 +496,14 @@ extension ListViewController {
     var errorMessage: String? {
         return errorView.message
     }
+    
+    func simulateLoadMoreFeedAction() {
+        guard let view = loadMoreFeedCell() else { return }
+        
+        let delegate = tableView.delegate
+        let index = IndexPath(row: 0, section: feedLoadMoreSection)
+        delegate?.tableView?(tableView, willDisplay: view, forRowAt: index)
+    }
 }
 
 extension ListViewController {
@@ -502,9 +527,17 @@ extension ListViewController {
         guard numberOfRenderedComments() > row else {
             return nil
         }
+        return cell(row: row, section: commentsSection) as? ImageCommentCell
+    }
+    
+    func cell(row: Int, section: Int) -> UITableViewCell? {
         let ds = tableView.dataSource
-        let index = IndexPath(row: row, section: commentsSection)
-        return ds?.tableView(tableView, cellForRowAt: index) as? ImageCommentCell
+        let index = IndexPath(row: row, section: section)
+        return ds?.tableView(tableView, cellForRowAt: index)
+    }
+    
+    private func loadMoreFeedCell() -> LoadMoreCell? {
+        cell(row: 0, section: feedLoadMoreSection) as? LoadMoreCell
     }
 
     private var commentsSection: Int {
@@ -567,8 +600,12 @@ extension ListViewController {
     }
 
     private var feedImagesSection: Int {
-        return 0
+        0
     }
+    private var feedLoadMoreSection: Int {
+        1
+    }
+    
 }
 
 extension FeedImageCell {
