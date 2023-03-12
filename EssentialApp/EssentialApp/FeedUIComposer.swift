@@ -18,24 +18,21 @@ public final class FeedUIComposer {
     public static func feedComposedWith(
         feedLoader: @escaping () -> AnyPublisher<Paginated<FeedImage>, Error>,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher,
-        selection: @escaping ((FeedImage) -> Void) = { _ in }
+        selection: @escaping (FeedImage) -> Void = { _ in }
     ) -> ListViewController {
         let presentationAdapter = FeedPresentationAdapter(loader: feedLoader)
-
+        
         let feedController = makeFeedViewController(title: FeedPresenter.title)
         feedController.onRefresh = presentationAdapter.loadResource
-
+        
         presentationAdapter.presenter = LoadResourcePresenter(
             resourceView: FeedViewAdapter(
                 controller: feedController,
                 imageLoader: imageLoader,
-                selection: selection
-            ),
+                selection: selection),
             loadingView: WeakRefVirtualProxy(feedController),
-            errorView: WeakRefVirtualProxy(feedController),
-            mapper:  { $0 }
-        )
-
+            errorView: WeakRefVirtualProxy(feedController))
+        
         return feedController
     }
 
@@ -87,30 +84,35 @@ extension WeakRefVirtualProxy: ResourceView where T: ResourceView, T.ResourceVie
 final class FeedViewAdapter: ResourceView {
     private weak var controller: ListViewController?
     private let imageLoader: (URL) -> FeedImageDataLoader.Publisher
-    private var selection: (FeedImage) -> Void
+    private let selection: (FeedImage) -> Void
+    
+    private typealias ImageDataPresentationAdapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>
     private typealias LoadMorePresentationAdapter = LoadResourcePresentationAdapter<Paginated<FeedImage>, FeedViewAdapter>
+
     init(controller: ListViewController, imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher, selection: @escaping (FeedImage) -> Void) {
         self.controller = controller
         self.imageLoader = imageLoader
         self.selection = selection
     }
-
+    
     func display(_ viewModel: Paginated<FeedImage>) {
-        let feed: [CellController] = viewModel.items.map {
-            model in
-            let adapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>(loader: { [imageLoader] in
+        let feed: [CellController] = viewModel.items.map { model in
+            let adapter = ImageDataPresentationAdapter(loader: { [imageLoader] in
                 imageLoader(model.url)
             })
-            let view = FeedImageCellController(viewModel: FeedImagePresenter.map(model), delegate: adapter, selection: { [selection] in
-                selection(model)
-            })
+            
+            let view = FeedImageCellController(
+                viewModel: FeedImagePresenter.map(model),
+                delegate: adapter,
+                selection: { [selection] in
+                    selection(model)
+                })
             
             adapter.presenter = LoadResourcePresenter(
                 resourceView: WeakRefVirtualProxy(view),
                 loadingView: WeakRefVirtualProxy(view),
                 errorView: WeakRefVirtualProxy(view),
-                mapper: UIImage.tryMake
-            )
+                mapper: UIImage.tryMake)
             
             return CellController(id: model, view)
         }
@@ -121,17 +123,14 @@ final class FeedViewAdapter: ResourceView {
         }
         
         let loadMoreAdapter = LoadMorePresentationAdapter(loader: loadMorePublisher)
-        
         let loadMore = LoadMoreCellController(callback: loadMoreAdapter.loadResource)
-        
+
         loadMoreAdapter.presenter = LoadResourcePresenter(
             resourceView: self,
             loadingView: WeakRefVirtualProxy(loadMore),
-            errorView: WeakRefVirtualProxy(loadMore),
-            mapper: { $0 }
-        )
-        
-        let loadMoreSection: [CellController] = [.init(id: UUID(), loadMore)]
+            errorView: WeakRefVirtualProxy(loadMore))
+
+        let loadMoreSection = [CellController(id: UUID(), loadMore)]
         
         controller?.display(feed, loadMoreSection)
     }
@@ -150,30 +149,29 @@ extension UIImage {
 
 final class LoadResourcePresentationAdapter<Resource, View: ResourceView> {
     private let loader: () -> AnyPublisher<Resource, Error>
+    private var cancellable: Cancellable?
     var presenter: LoadResourcePresenter<Resource, View>?
-    var cancellable: AnyCancellable?
-
+    
     init(loader: @escaping () -> AnyPublisher<Resource, Error>) {
         self.loader = loader
     }
-
+    
     func loadResource() {
         presenter?.didStartLoading()
+        
         cancellable = loader()
             .dispatchOnMainQueue()
-            .sink { [weak self] completion in
-            switch completion {
-            case let .failure(error):
-                self?.presenter?.didFinishLoading(with: error)
-            case .finished: break
-            }
-        } receiveValue: { [weak self] feed in
-            self?.presenter?.didFinishLoading(with: feed)
-        }
-    }
-
-    deinit {
-        cancellable = nil
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    switch completion {
+                    case .finished: break
+                        
+                    case let .failure(error):
+                        self?.presenter?.didFinishLoading(with: error)
+                    }
+                }, receiveValue: { [weak self] resource in
+                    self?.presenter?.didFinishLoading(with: resource)
+                })
     }
 }
 
@@ -181,7 +179,7 @@ extension LoadResourcePresentationAdapter: FeedImageCellControllerDelegate {
     func didRequestImage() {
         loadResource()
     }
-
+    
     func didCancelImageRequest() {
         cancellable?.cancel()
         cancellable = nil
@@ -197,4 +195,18 @@ public extension Paginated {
             }.eraseToAnyPublisher()
         }
     }
+    
+    init(items: [Item], loadMorePublisher: (() -> AnyPublisher<Self, Error>)?) {
+            self.init(items: items, loadMore: loadMorePublisher.map { publisher in
+                return { completion in
+                    publisher().subscribe(Subscribers.Sink(receiveCompletion: { result in
+                        if case let .failure(error) = result {
+                            completion(.failure(error))
+                        }
+                    }, receiveValue: { result in
+                        completion(.success(result))
+                    }))
+                }
+            })
+        }
 }

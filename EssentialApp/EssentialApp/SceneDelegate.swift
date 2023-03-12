@@ -134,13 +134,14 @@ public extension FeedImageDataLoader {
 
     func loadImageDataPublisher(from url: URL) -> Publisher {
         var task: FeedImageDataLoaderTask?
-
+        
         return Deferred {
             Future { completion in
                 task = self.loadImageData(from: url, completion: completion)
             }
-        }.handleEvents(receiveCancel: { task?.cancel() })
-            .eraseToAnyPublisher()
+        }
+        .handleEvents(receiveCancel: { task?.cancel() })
+        .eraseToAnyPublisher()
     }
 }
 

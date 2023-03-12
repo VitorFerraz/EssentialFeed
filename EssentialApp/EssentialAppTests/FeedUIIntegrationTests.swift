@@ -84,16 +84,28 @@ class FeedUIIntegrationTests: XCTestCase {
     
     func test_loadMoreActions_requestMoreFromLoader() {
         let (sut, loader) = makeSUT()
-         sut.loadViewIfNeeded()
-         loader.completeFeedLoading()
-
-         XCTAssertEqual(loader.loadMoreCallCount, 0, "Expected no requests before until load more action")
-
-         sut.simulateLoadMoreFeedAction()
-         XCTAssertEqual(loader.loadMoreCallCount, 1, "Expected load more request")
+        sut.loadViewIfNeeded()
+        loader.completeFeedLoading()
+        
+        XCTAssertEqual(loader.loadMoreCallCount, 0, "Expected no requests before until load more action")
+        
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 1, "Expected load more request")
         
         sut.simulateLoadMoreFeedAction()
         XCTAssertEqual(loader.loadMoreCallCount, 1, "Expected no request while loading more")
+        
+        loader.completeLoadMore(lastPage: false, at: 0)
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 2, "Expected request after load more completed with more pages")
+        
+        loader.completeLoadMoreWithError(at: 1)
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 3, "Expected request after load more failure")
+        
+        loader.completeLoadMore(lastPage: true, at: 2)
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 3, "Expected no request after loading all pages")
     }
 
     func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
@@ -369,17 +381,21 @@ class FeedUIIntegrationTests: XCTestCase {
         return UIImage.make(withColor: .red).pngData()!
     }
 
-    private func makeSUT(selection: @escaping ((FeedImage) -> Void) = { _ in }, file: StaticString = #file, line: UInt = #line) -> (sut: ListViewController, loader: LoaderSpy) {
-        let loader = LoaderSpy()
-        let sut = FeedUIComposer.feedComposedWith(
-            feedLoader: loader.loadPublisher,
-            imageLoader: loader.loadImageDataPublisher,
-            selection: selection
-        )
-        trackForMemoryLeaks(loader, file: file, line: line)
-        trackForMemoryLeaks(sut, file: file, line: line)
-        return (sut, loader)
-    }
+    private func makeSUT(
+            selection: @escaping (FeedImage) -> Void = { _ in },
+            file: StaticString = #filePath,
+            line: UInt = #line
+        ) -> (sut: ListViewController, loader: LoaderSpy) {
+            let loader = LoaderSpy()
+            let sut = FeedUIComposer.feedComposedWith(
+                feedLoader: loader.loadPublisher,
+                imageLoader: loader.loadImageDataPublisher,
+                selection: selection
+            )
+            trackForMemoryLeaks(loader, file: file, line: line)
+            trackForMemoryLeaks(sut, file: file, line: line)
+            return (sut, loader)
+        }
 
     func assertThat(_ sut: ListViewController, isRendering feed: [FeedImage], file: StaticString = #file, line: UInt = #line) throws {
         sut.tableView.layoutIfNeeded()
@@ -404,67 +420,6 @@ class FeedUIIntegrationTests: XCTestCase {
     private func makeImage(description: String? = nil, location: String? = nil, url: URL = URL(string: "http://any-url.com")!) -> FeedImage {
         FeedImage(id: UUID(), description: description, location: location, url: url)
     }
-
-    private class LoaderSpy: FeedImageDataLoader {
-        private var imageRequests = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
-        var loadedImageURLs: [URL] {
-            imageRequests.map { $0.url }
-        }
-
-        var cancelledImageURLs: [URL] = []
-        var loadFeedCallCount: Int {
-            feedRequests.count
-        }
-        
-        private (set) var loadMoreCallCount: Int = 0
-
-        // MARK: - FeedLoader
-
-        var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
-
-        func loadPublisher() -> AnyPublisher<Paginated<FeedImage>, Error> {
-            let publisher = PassthroughSubject<Paginated<FeedImage>, Error>()
-            feedRequests.append(publisher)
-            return publisher.eraseToAnyPublisher()
-        }
-        
-        func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = 0) {
-            feedRequests[index].send(Paginated(items: feed, loadMore: { [weak self] _ in
-                self?.loadMoreCallCount += 1
-            }))
-        }
-
-        func completeFeedLoadingWithError(at index: Int = 0) {
-            feedRequests[index].send(completion: .failure(NSError(domain: "", code: -1)))
-        }
-        
-        
-
-        // MARK: - FeedImageDataLoader
-
-        private struct TaskSpy: FeedImageDataLoaderTask {
-            let cancelCallback: () -> Void
-            func cancel() {
-                cancelCallback()
-            }
-        }
-
-        func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-            imageRequests.append((url, completion))
-            return TaskSpy { [weak self] in
-                self?.cancelledImageURLs.append(url)
-            }
-        }
-
-        func completeImageLoading(with imageData: Data = Data(), at index: Int = 0) {
-            imageRequests[index].completion(.success(imageData))
-        }
-
-        func completeImageLoadingWithError(at index: Int = 0) {
-            let error = NSError(domain: "an error", code: 0)
-            imageRequests[index].completion(.failure(error))
-        }
-    }
 }
 
 private extension UIRefreshControl {
@@ -478,26 +433,102 @@ private extension UIRefreshControl {
 }
 
 extension ListViewController {
-    override public func loadViewIfNeeded() {
+    public override func loadViewIfNeeded() {
         super.loadViewIfNeeded()
-
+        
         tableView.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
     }
-
+    
     func simulateUserInitiatedReload() {
         refreshControl?.simulatePullToRefresh()
     }
-
+    
     var isShowingLoadingIndicator: Bool {
         return refreshControl?.isRefreshing == true
     }
-
+    
     func simulateErrorViewTap() {
         errorView.simulateTap()
     }
-
+    
     var errorMessage: String? {
         return errorView.message
+    }
+    
+    func numberOfRows(in section: Int) -> Int {
+        tableView.numberOfSections > section ? tableView.numberOfRows(inSection: section) : 0
+    }
+    
+    func cell(row: Int, section: Int) -> UITableViewCell? {
+        guard numberOfRows(in: section) > row else {
+            return nil
+        }
+        let ds = tableView.dataSource
+        let index = IndexPath(row: row, section: section)
+        return ds?.tableView(tableView, cellForRowAt: index)
+    }
+}
+
+extension ListViewController {
+    func numberOfRenderedComments() -> Int {
+        numberOfRows(in: commentsSection)
+    }
+    
+    func commentMessage(at row: Int) -> String? {
+        commentView(at: row)?.messageLabel.text
+    }
+    
+    func commentDate(at row: Int) -> String? {
+        commentView(at: row)?.dateLabel.text
+    }
+    
+    func commentUsername(at row: Int) -> String? {
+        commentView(at: row)?.usernameLabel.text
+    }
+    
+    private func commentView(at row: Int) -> ImageCommentCell? {
+        cell(row: row, section: commentsSection) as? ImageCommentCell
+    }
+
+    private var commentsSection: Int { 0 }
+}
+ 
+extension ListViewController {
+
+    @discardableResult
+    func simulateFeedImageViewVisible(at index: Int) -> FeedImageCell? {
+        return feedImageView(at: index) as? FeedImageCell
+    }
+    
+    @discardableResult
+    func simulateFeedImageViewNotVisible(at row: Int) -> FeedImageCell? {
+        let view = simulateFeedImageViewVisible(at: row)
+        
+        let delegate = tableView.delegate
+        let index = IndexPath(row: row, section: feedImagesSection)
+        delegate?.tableView?(tableView, didEndDisplaying: view!, forRowAt: index)
+        
+        return view
+    }
+    
+    func simulateTapOnFeedImage(at row: Int) {
+        let delegate = tableView.delegate
+        let index = IndexPath(row: row, section: feedImagesSection)
+        delegate?.tableView?(tableView, didSelectRowAt: index)
+    }
+    
+    func simulateFeedImageViewNearVisible(at row: Int) {
+        let ds = tableView.prefetchDataSource
+        let index = IndexPath(row: row, section: feedImagesSection)
+        ds?.tableView(tableView, prefetchRowsAt: [index])
+    }
+    
+    func simulateFeedImageViewNotNearVisible(at row: Int) {
+        simulateFeedImageViewNearVisible(at: row)
+        
+        let ds = tableView.prefetchDataSource
+        let index = IndexPath(row: row, section: feedImagesSection)
+        ds?.tableView?(tableView, cancelPrefetchingForRowsAt: [index])
     }
     
     func simulateLoadMoreFeedAction() {
@@ -507,109 +538,45 @@ extension ListViewController {
         let index = IndexPath(row: 0, section: feedLoadMoreSection)
         delegate?.tableView?(tableView, willDisplay: view, forRowAt: index)
     }
-}
-
-extension ListViewController {
-    func numberOfRenderedComments() -> Int {
-        tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: commentsSection)
-    }
-
-    func commentMessage(at row: Int) -> String? {
-        commentView(at: row)?.messageLabel.text
-    }
-
-    func commentDate(at row: Int) -> String? {
-        commentView(at: row)?.dateLabel.text
-    }
-
-    func commentUsername(at row: Int) -> String? {
-        commentView(at: row)?.usernameLabel.text
-    }
-
-    private func commentView(at row: Int) -> ImageCommentCell? {
-        guard numberOfRenderedComments() > row else {
-            return nil
-        }
-        return cell(row: row, section: commentsSection) as? ImageCommentCell
+    
+    func simulateTapOnLoadMoreFeedError() {
+        let delegate = tableView.delegate
+        let index = IndexPath(row: 0, section: feedLoadMoreSection)
+        delegate?.tableView?(tableView, didSelectRowAt: index)
     }
     
-    func cell(row: Int, section: Int) -> UITableViewCell? {
-        let ds = tableView.dataSource
-        let index = IndexPath(row: row, section: section)
-        return ds?.tableView(tableView, cellForRowAt: index)
+    var isShowingLoadMoreFeedIndicator: Bool {
+        return loadMoreFeedCell()?.isLoading == true
+    }
+    
+    var loadMoreFeedErrorMessage: String? {
+        return loadMoreFeedCell()?.message
+    }
+    
+    var canLoadMoreFeed: Bool {
+        loadMoreFeedCell() != nil
     }
     
     private func loadMoreFeedCell() -> LoadMoreCell? {
         cell(row: 0, section: feedLoadMoreSection) as? LoadMoreCell
     }
-
-    private var commentsSection: Int {
-        return 0
-    }
-}
-
-extension ListViewController {
-    func simulateTapOnFeedImage(at row: Int) {
-        let delegate = tableView.delegate
-        let index = IndexPath(row: row, section: feedImagesSection)
-        delegate?.tableView?(tableView, didSelectRowAt: index)
-    }
     
-    @discardableResult
-    func simulateFeedImageViewVisible(at index: Int) -> FeedImageCell? {
-        return feedImageView(at: index) as? FeedImageCell
-    }
-
-    @discardableResult
-    func simulateFeedImageViewNotVisible(at row: Int) -> FeedImageCell? {
-        let view = simulateFeedImageViewVisible(at: row)
-
-        let delegate = tableView.delegate
-        let index = IndexPath(row: row, section: feedImagesSection)
-        delegate?.tableView?(tableView, didEndDisplaying: view!, forRowAt: index)
-
-        return view
-    }
-
-    func simulateFeedImageViewNearVisible(at row: Int) {
-        let ds = tableView.prefetchDataSource
-        let index = IndexPath(row: row, section: feedImagesSection)
-        ds?.tableView(tableView, prefetchRowsAt: [index])
-    }
-
-    func simulateFeedImageViewNotNearVisible(at row: Int) {
-        simulateFeedImageViewNearVisible(at: row)
-
-        let ds = tableView.prefetchDataSource
-        let index = IndexPath(row: row, section: feedImagesSection)
-        ds?.tableView?(tableView, cancelPrefetchingForRowsAt: [index])
-    }
-
     func renderedFeedImageData(at index: Int) -> Data? {
         return simulateFeedImageViewVisible(at: index)?.renderedImage
     }
-
+    
     func numberOfRenderedFeedImageViews() -> Int {
-        tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: feedImagesSection)
-    }
-
-    func feedImageView(at row: Int) -> UITableViewCell? {
-        guard numberOfRenderedFeedImageViews() > row else {
-            return nil
-        }
-        let ds = tableView.dataSource
-        let index = IndexPath(row: row, section: feedImagesSection)
-        return ds?.tableView(tableView, cellForRowAt: index)
-    }
-
-    private var feedImagesSection: Int {
-        0
-    }
-    private var feedLoadMoreSection: Int {
-        1
+        numberOfRows(in: feedImagesSection)
     }
     
+    func feedImageView(at row: Int) -> UITableViewCell? {
+        cell(row: row, section: feedImagesSection)
+    }
+    
+    private var feedImagesSection: Int { 0 }
+    private var feedLoadMoreSection: Int { 1 }
 }
+
 
 extension FeedImageCell {
     func simulateRetryAction() {

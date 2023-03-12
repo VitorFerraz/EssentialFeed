@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		495DEA9129BE8912009029C5 /* FeedUIIntegrationTests+LoaderSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495DEA9029BE8912009029C5 /* FeedUIIntegrationTests+LoaderSpy.swift */; };
 		4970F0D629187C7900DAC2A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970F0D529187C7900DAC2A5 /* AppDelegate.swift */; };
 		4970F0D829187C7900DAC2A5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970F0D729187C7900DAC2A5 /* SceneDelegate.swift */; };
 		4970F0DA29187C7900DAC2A5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4970F0D929187C7900DAC2A5 /* ViewController.swift */; };
@@ -75,6 +76,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		495DEA9029BE8912009029C5 /* FeedUIIntegrationTests+LoaderSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedUIIntegrationTests+LoaderSpy.swift"; sourceTree = "<group>"; };
 		4970F0D229187C7900DAC2A5 /* EssentialApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssentialApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4970F0D529187C7900DAC2A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4970F0D729187C7900DAC2A5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 				498EB78B29450AF500D1F08D /* XCTestCase+FeedImageDataLoader.swift */,
 				49DEE6DE29468D520093ACA1 /* HTTPClientStub.swift */,
 				49DEE6E029468D820093ACA1 /* InMemoryFeedStore.swift */,
+				495DEA9029BE8912009029C5 /* FeedUIIntegrationTests+LoaderSpy.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -386,6 +389,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				495DEA9129BE8912009029C5 /* FeedUIIntegrationTests+LoaderSpy.swift in Sources */,
 				49DEE6E129468D820093ACA1 /* InMemoryFeedStore.swift in Sources */,
 				49A3398B29244B3300F8FFC8 /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 				49A3398D29244B8000F8FFC8 /* SharedTestHelpers.swift in Sources */,
