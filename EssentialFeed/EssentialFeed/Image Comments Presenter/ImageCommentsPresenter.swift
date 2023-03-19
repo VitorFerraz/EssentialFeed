@@ -25,8 +25,8 @@ public struct ImageCommentViewModel: Hashable {
 
 public final class ImageCommentsPresenter {
     public static var title: String {
-        return NSLocalizedString("FEED_VIEW_TITLE",
-                                 tableName: "Feed",
+        return NSLocalizedString("IMAGE_COMMENTS_VIEW_TITLE",
+                                 tableName: "ImageComments",
                                  bundle: Bundle(for: ImageCommentsPresenter.self),
                                  comment: "Title for the feed view")
     }
