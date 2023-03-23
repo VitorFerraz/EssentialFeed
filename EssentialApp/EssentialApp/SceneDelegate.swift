@@ -15,6 +15,11 @@ import os
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    private lazy var scheduler: AnyDispatchQueueScheduler = DispatchQueue(
+            label: "com.essentialdeveloper.infra.queue",
+            qos: .userInitiated,
+            attributes: .concurrent
+        ).eraseToAnyScheduler()
 
     private lazy var logger = Logger(subsystem: "com.essentialdeveloper.EssentialAppCaseStudy", category: "main")
     private lazy var httpClient: HTTPClient = {
@@ -47,9 +52,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             selection: showComments
         ))
 
-    convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
+    convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore, scheduler: AnyDispatchQueueScheduler) {
         self.init()
         self.httpClient = httpClient
+        self.scheduler = scheduler
         self.store = store
     }
 
@@ -65,8 +71,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.makeKeyAndVisible()
     }
 
-    func sceneWillResignActive(_: UIScene) {
-        localFeedLoader.validateCache { _ in }
+    func sceneWillResignActive(_ scene: UIScene) {
+        do {
+            try localFeedLoader.validateCache()
+        } catch {
+            logger.error("Failed to validate cache with error: \(error.localizedDescription)")
+        }
     }
 
     private func showComments(for image: FeedImage) {
@@ -124,14 +134,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return localImageLoader
             .loadImageDataPublisher(from: url)
             .loadCacheMisses(url: url, logger: logger)
-            .fallback(to: { [httpClient, logger] in
+            .fallback(to: { [httpClient, logger, scheduler] in
                 httpClient
                     .getPublisher(url: url)
                     .logErrors(logger: logger, url: url)
                     .logElapsedTime(logger: logger, url: url)
                     .tryMap(FeedImageDataMapper.map)
                     .caching(to: localImageLoader, using: url)
+                    .subscribe(on: scheduler)
+                    .eraseToAnyPublisher()
             })
+            .subscribe(on: scheduler)
+            .eraseToAnyPublisher()
     }
 }
 
@@ -155,29 +169,28 @@ public extension FeedImageDataLoader {
     typealias Publisher = AnyPublisher<Data, Error>
 
     func loadImageDataPublisher(from url: URL) -> Publisher {
-        var task: FeedImageDataLoaderTask?
-        
         return Deferred {
             Future { completion in
-                task = self.loadImageData(from: url, completion: completion)
+                completion(Result {
+                    try self.loadImageData(from: url)
+                })
             }
         }
-        .handleEvents(receiveCancel: { task?.cancel() })
         .eraseToAnyPublisher()
     }
 }
 
 extension Publisher where Output == Data {
-    func caching(to cache: FeedImageCache, using url: URL) -> AnyPublisher<Output, Failure> {
+    func caching(to cache: FeedImageDataCache, using url: URL) -> AnyPublisher<Output, Failure> {
         handleEvents(receiveOutput: { data in
             cache.saveIgnoringResult(data, for: url)
         }).eraseToAnyPublisher()
     }
 }
 
-private extension FeedImageCache {
+private extension FeedImageDataCache {
     func saveIgnoringResult(_ data: Data, for url: URL) {
-        save(data, for: url) { _ in }
+        try? save(data, for: url)
     }
 }
 
@@ -193,7 +206,7 @@ extension Publisher {
 
 private extension FeedCache {
     func saveIgnoringResult(_ feed: [FeedImage]) {
-        save(feed) { _ in }
+        try? save(feed)
     }
     
     func saveIgnoringResult(_ page: Paginated<FeedImage>) {
@@ -205,7 +218,9 @@ public extension LocalFeedLoader {
     typealias Publisher = AnyPublisher<[FeedImage], Error>
     func loadPublisher() -> Publisher {
         Deferred {
-            Future(self.load)
+            Future { completion in
+                completion(Result{ try self.load() })
+            }
         }
         .eraseToAnyPublisher()
     }
